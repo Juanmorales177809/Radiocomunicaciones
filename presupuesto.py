@@ -16,7 +16,7 @@ class Presupuesto:
     #Perdidas en trayectoriaa por espacio libre (Frecuencia en Ghz y distancia en Km)
     def lostFreegi(self,D):
         return 92.4 +20*np.log10(self.f)+20*np.log10(D)
-    #Perdidas en trayectoriaa por espacio libre (Frecuencia en Mhz y distancia en Km)
+    #Perdidas en trayectoria por espacio libre (Frecuencia en Mhz y distancia en Km)
     def lostFreemeg(self):
         return 32.4+20*np.log10(self.f)+20*np.log10(self.D)
     
@@ -41,7 +41,10 @@ class Presupuesto:
         self.factorRugo(val)
         self.factorProba(prob)
         return 30*np.log10(self.D)+10*np.log10(6*self.A*self.B*self.f)-10*np.log10(1-self.R)-70
-
+    #>Ecuación de Friss, solo recibe valores en decibeles
+    def friss(self,ptx,gitx,girx,lfs):
+        return ptx+gitx+girx-lfs
+    
     
 if __name__ == "__main__":
     lost = Presupuesto(1.8,40)
