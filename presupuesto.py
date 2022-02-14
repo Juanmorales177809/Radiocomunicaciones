@@ -10,11 +10,12 @@ class Presupuesto:
         self.A = 0
         self.B = 0
         self.R = 0.9999
+        
     #Perdidas en trayectoria por espacio libre (adimensional)
-    def lostFree(self,D):
+    def lfsW(self,D):
         return ((4*np.pi*D)/self.wavLegh)**2
-    #Perdidas en trayectoriaa por espacio libre (Frecuencia en Ghz y distancia en Km)
-    def lostFreegi(self,D):
+    #Perdidas en trayectoria por espacio libre (Frecuencia en Ghz y distancia en Km)
+    def lfs(self,D):
         return 92.4 +20*np.log10(self.f)+20*np.log10(D)
     #Perdidas en trayectoria por espacio libre (Frecuencia en Mhz y distancia en Km)
     def lostFreemeg(self):
@@ -44,8 +45,16 @@ class Presupuesto:
     #>Ecuación de Friss, solo recibe valores en decibeles
     def friss(self,ptx,gitx,girx,lfs):
         return ptx+gitx+girx-lfs
-    
-    
+class Friis(Presupuesto):
+    def __init__(self,Ptx,Gitx,Girx,Prx):
+        self.Ptx = Ptx
+        self.Gitx = Gitx
+        self.Girx = Girx
+        self.Prx = Prx
+    def friis(self):
+        return self.Ptx+self.Gitx+self.Girx-self.lfs
+
+   
 if __name__ == "__main__":
     lost = Presupuesto(1.8,40)
     d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")
