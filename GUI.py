@@ -5,7 +5,6 @@ from tkinter import font
 from turtle import back, color
 from matplotlib.colorbar import Colorbar
 from tkinter import messagebox
-
 from matplotlib.pyplot import colorbar
 from pyparsing import col
 import convertir
@@ -85,15 +84,6 @@ lfs= Entry(canvas2,width=10,borderwidth=2)
 lfs.grid(row=1,column=10)
 combo4= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
 combo4.grid(row=1,column=11)
-
-
-
-
-
-
-
-
-
 
 def insertar(caja,combo):
     caja.configure(state=NORMAL)
