@@ -70,7 +70,15 @@ class Presupuesto:
         self.ptx-gananciaSistema
     #Pérdida por ramificación
     def lf(self):
-        pass
+        if self.f== 1.8:
+            self.lf= 5.4
+            self.lbs= 2
+        elif self.f==7.4:
+            self.lf= 4.7
+            self.lbs=2
+        elif self.f ==  8.0:
+            pass
+
 if __name__ == "__main__":
     lost = Presupuesto(1.8,40)
     d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")
