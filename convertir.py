@@ -21,6 +21,10 @@ def dBDBm(dB):
     return dB -30
 def dBmDB(dBm):
     return dBm+30
+def meToKm(dm):
+    return dm/1000
+def kmToM(km):
+    return km*1000
 if __name__ == "__main__":
     print(todBm(1000))
     print(megGig(917))

@@ -1,5 +1,6 @@
 
 import numpy as np
+import calculos
 
 class Presupuesto:
     def __init__(self,f,D,ptx,gitx,girx,lfs,prx,cminrec):
@@ -78,7 +79,11 @@ class Presupuesto:
             self.lbs=2
         elif self.f ==  8.0:
             pass
-
+        
+    #Zona de fresnel 1
+    def fresnel(self,d1,d2,f):
+        return np.sqrt((calculos.wavLegh(f)*d1*d2)/d1+d2)
+    
 if __name__ == "__main__":
     lost = Presupuesto(1.8,40)
     d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")

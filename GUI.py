@@ -9,6 +9,10 @@ from matplotlib.pyplot import colorbar
 from pyparsing import col
 import convertir
 from tkinter import ttk
+import calculos
+import presupuesto
+
+"""---------------------Head----------------------"""
 
 v = Tk()
 v.iconbitmap("./assets/antena.ico")
@@ -25,13 +29,20 @@ frameF= Frame(width=700, height=100, bg='white', background='white' )
 frameF.pack()
 canvas2 = Canvas(width=700, height=300, bg='white')
 canvas2.pack(expand=YES,fill=BOTH)
+frameFres= Frame(width=700, height=100, bg='white', background='white' )
+frameFres.pack()
+canvas3 = Canvas(width=700, height=300, bg='white')
+canvas3.pack(expand=YES,fill=BOTH)
+
+"""---------------------Bodie----------------------"""
+
 Label(frame,text='RADIOCOMUNICACIONES',background='white', font=("Courier", 25)).grid(row=0,column=0)
 Label(canvas,text="Conversor",background='white',font=('Courier',13)).grid(row=0,column=0)
 Label(canvas,text="Ingrese valor",background='white', font=('Courier',11)).grid(row=1,column=0)
-comboDe= ttk.Combobox(canvas,values=["dB","dBm","W","mW"],width=7,foreground='grey')
+comboDe= ttk.Combobox(canvas,values=["dB","dBm","W","mW","metros","Kilometros"],width=7,foreground='grey')
 comboDe.grid(row=1, column=2,padx=5, pady=5)
 Label(canvas,text="=", background='white', font='Courier').grid(row=1,column=4)
-comboTo= ttk.Combobox(canvas,values=["dB","dBm","W","mW"],width=7,foreground='grey')
+comboTo= ttk.Combobox(canvas,values=["dB","dBm","W","mW","metros","Kilometros"],width=7,foreground='grey')
 comboTo.grid(row=1, column=5,padx=5, pady=5)
 ent1 = Entry(canvas,width=20,borderwidth=2)
 ent1.grid(row=1,column=1)
@@ -41,17 +52,17 @@ textConv =Entry(canvas,borderwidth=2,width=20)#Caja de texto con las unidades co
 textConv.grid(row=3,column=1,padx=5, pady=5)
 
 #Perdidas por espacio libre
-Label(frameP,text="Perdidas en el espacio libre",font=("Courier",15),bg='white').grid(row=0,column=0)
-Label(canvas2,text='Lfs =').grid(row=0, column=0)
+Label(frameP,text="Perdidas en el espacio libre",font=("Courier",25),bg='white').grid(row=0,column=0)
+Label(canvas2,text='Lfs =', font=('Courier',15),bg='white').grid(row=0, column=0)
 potenciaT= Entry(canvas2,width=10,borderwidth=2)
 potenciaT.grid(row=0, column=1)
 potenciaT.insert(0, 'constante' )
-Label(canvas2,text=' + ', font=('Courier',15),bg='white').grid(row=0,column=3)
+Label(canvas2,text=' + f ', font=('Courier',15),bg='white').grid(row=0,column=3)
 gananciaT= Entry(canvas2,width=10,borderwidth=2)
 gananciaT.grid(row=0,column=4)
 combo1= ttk.Combobox(canvas2,values=["Hz","Mhz","Khz","Ghz"],width=7,foreground='grey')
 combo1.grid(row=0,column=5)
-Label(canvas2,text=' + ', font=('Courier',15),bg='white').grid(row=0,column=6)
+Label(canvas2,text=' + D ', font=('Courier',15),bg='white').grid(row=0,column=6)
 gananciaR= Entry(canvas2,width=10,borderwidth=2)
 gananciaR.grid(row=0,column=7)
 combo2= ttk.Combobox(canvas2,values=["cm","m","Km","millas"],width=7,foreground='grey')
@@ -63,8 +74,8 @@ resultado.grid(row=0,column=10)
 
 
 #Friis
-Label(frameF,text="Relacion senal/ruido",font=("Courier",15),bg='white').grid(row=0,column=0)
-Label(canvas2,text='Friis =').grid(row=1, column=0)
+Label(frameF,text="Relacion senal/ruido",font=("Courier",25),bg='white').grid(row=0,column=0)
+Label(canvas2,text='Friis =', font=('Courier',15),bg='white').grid(row=1, column=0)
 potenciaT= Entry(canvas2,width=10,borderwidth=2)
 potenciaT.grid(row=1, column=1)
 combo1= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
@@ -90,83 +101,146 @@ def insertar(caja,combo):
     caja.delete(0,END)
     caja.insert(0,combo)
     caja.configure(state=DISABLED)
+#Conversor de unidades
+
 
 def agregar():
-    num = float(ent1.get())
-    if comboDe.get() == "W":
-        if comboTo.get() == "W":
-            messagebox.showerror("Error", message='No puede elegir las mismas unidades')
-            insertar(textConv,num)
-            insertar(textUnit,'W')
-        elif comboTo.get() == "mW":
-            conv= convertir.watsMwats(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'mW')    
-        elif comboTo.get()=="dB":
-            conv= convertir.todB(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'dB')
-        elif comboTo.get()=="dBm":
-            conv= convertir.todB(num)
-            conv= convertir.dBDBm(conv)
-            insertar(textConv,conv)
-            insertar(textUnit,'dBm')
-    elif comboDe.get() == "mW":
-        if comboTo.get() == "W":
-            conv= convertir.mWatsWats(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'W')
-        elif comboTo.get() == "mW":
-            messagebox.showerror("No puede elegir las mismas unidades")
-            insertar(textConv,conv)
-            insertar(textUnit,'mW')    
-        elif comboTo.get()=="dBm":
-            conv= convertir.todBm(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'dBm')
-        elif comboTo.get()=="dB":
-            conv= convertir.todBm(num)
-            conv= convertir.dBmDB(conv)
-            insertar(textConv,conv)
-            insertar(textUnit,'dB')
-    elif comboDe.get() == "dB":
-        if comboTo.get() == "W":
-            conv= convertir.toWats(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'W')
-        elif comboTo.get() == "dB":
-            messagebox.showerror("No puede elegir las mismas unidades")
-            insertar(textConv,conv)
-            insertar(textUnit,'dB')    
-        elif comboTo.get()=="dBm":
-            conv= convertir.dBDBm(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'dBm')
-        elif comboTo.get()=="mW":
-            conv= convertir.dBDBm(num)
-            conv= convertir.tomWats(conv)
-            insertar(textConv,conv)
-            insertar(textUnit,'mW')
-    elif comboDe.get() == "mW":
-        if comboTo.get() == "W":
-            conv= convertir.mWatsWats(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'W')
-        elif comboTo.get() == "mW":
-            messagebox.showerror("No puede elegir las mismas unidades")
-            insertar(textConv,conv)
-            insertar(textUnit,'mW')    
-        elif comboTo.get()=="dBm":
-            conv= convertir.todBm(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'dBm')
-        elif comboTo.get()=="dB":
-            conv= convertir.mWatsWats
-            conv= convertir.todB(num)
-            insertar(textConv,conv)
-            insertar(textUnit,'dB')
-    
-    
+    try:
+        num = float(ent1.get())
+        if comboDe.get() == "W":
+            if comboTo.get() == "W":
+                messagebox.showerror("Error", message='No puede elegir las mismas unidades')
+                insertar(textConv,num)
+                insertar(textUnit,'W')
+            elif comboTo.get() == "mW":
+                conv= convertir.watsMwats(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'mW')    
+            elif comboTo.get()=="dB":
+                conv= convertir.todB(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'dB')
+            elif comboTo.get()=="dBm":
+                conv= convertir.todB(num)
+                conv= convertir.dBDBm(conv)
+                insertar(textConv,conv)
+                insertar(textUnit,'dBm')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida')
+        elif comboDe.get() == "mW":
+            if comboTo.get() == "W":
+                conv= convertir.mWatsWats(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'W')
+            elif comboTo.get() == "mW":
+                messagebox.showerror("No puede elegir las mismas unidades")
+                insertar(textConv,conv)
+                insertar(textUnit,'mW')    
+            elif comboTo.get()=="dBm":
+                conv= convertir.todBm(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'dBm')
+            elif comboTo.get()=="dB":
+                conv= convertir.todBm(num)
+                conv= convertir.dBmDB(conv)
+                insertar(textConv,conv)
+                insertar(textUnit,'dB')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida')
+        elif comboDe.get() == "dB":
+            if comboTo.get() == "W":
+                conv= convertir.toWats(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'W')
+            elif comboTo.get() == "dB":
+                messagebox.showerror("No puede elegir las mismas unidades")
+                insertar(textConv,conv)
+                insertar(textUnit,'dB')    
+            elif comboTo.get()=="dBm":
+                conv= convertir.dBDBm(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'dBm')
+            elif comboTo.get()=="mW":
+                conv= convertir.dBDBm(num)
+                conv= convertir.tomWats(conv)
+                insertar(textConv,conv)
+                insertar(textUnit,'mW')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida')
+        elif comboDe.get() == "mW":
+            if comboTo.get() == "W":
+                conv= convertir.mWatsWats(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'W')
+            elif comboTo.get() == "mW":
+                messagebox.showerror("No puede elegir las mismas unidades")
+                insertar(textConv,conv)
+                insertar(textUnit,'mW')    
+            elif comboTo.get()=="dBm":
+                conv= convertir.todBm(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'dBm')
+            elif comboTo.get()=="dB":
+                conv= convertir.mWatsWats(num)
+                conv= convertir.todB(conv)
+                insertar(textConv,conv)
+                insertar(textUnit,'dB')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida')
+        elif comboDe.get() == "metros":
+            if comboTo.get() == "Kilometros":
+                conv= convertir.meToKm(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'Kilometros')
+            elif comboTo.get() == 'metros':
+                insertar(textConv,num)
+                insertar(textUnit,'metros')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida')
+        elif comboDe.get() == "Kilometros":
+            if comboTo.get() == "metros":
+                conv= convertir.kmToM(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'metros')
+            elif comboTo.get() == 'Kilometros':
+                insertar(textConv,num)
+                insertar(textUnit,'Kilometros')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida')
+    except:
+        messagebox.showerror("Error", message='Ingrese valores')
+#Zonas de fresnel
+
+Label(frameFres, text='Zonas de Fresnel y linea de Vista',background='white', font=("Courier", 25)).pack()
+Label(canvas3,text="f=",background="white",font=("Courier")).grid(row=0,column=0)
+lamb= Entry(canvas3,width=10,borderwidth=2)
+lamb.grid(row=0,column=1)
+comboF1= ttk.Combobox(canvas3,values=["Hz","Mhz","Khz","Ghz"],width=7,foreground='grey')
+comboF1.grid(row=0,column=2)
+Label(canvas3,text='D1=',background="white",font=("Courier")).grid(row=0,column=3)
+d1= Entry(canvas3, width=10, borderwidth=2)
+d1.grid(row=0,column=4)
+Label(canvas3,text='D2=',background="white",font=("Courier")).grid(row=0,column=5)
+d2= Entry(canvas3, width=10, borderwidth=2)
+d2.grid(row=0,column=6)
+Label(canvas3,text='Zona=',background="white",font=("Courier")).grid(row=0,column=7)
+n= Entry(canvas3, width=10, borderwidth=2)
+n.grid(row=0,column=8)
+Label(canvas3,text='rn= ',background='white',font=("Courier")).grid(row=1,column=0)
+altura= Entry(canvas3, width=10,borderwidth=2)
+altura.grid(row=1,column=1)
+def calcula():
+    D1= d1.get()
+    D2= d2.get()
+    f= lamb.get()
+    Fresnel = presupuesto.Presupuesto()
+    Fr= Fresnel.fresnel(D1,D2,f)
+    insertar(altura,Fr)
+Button(canvas3, text="Calcular altura antena", background='blue',width=20,fg='white',command= lambda: calcula()).grid(row =0, column = 8,padx=5, pady=5)
+
+
+
+
     
     
 photo = PhotoImage(file=r"./assets/convertir.png")    
