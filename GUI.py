@@ -10,7 +10,7 @@ from pyparsing import col
 import convertir
 from tkinter import ttk
 import calculos
-import presupuesto
+from presupuesto import Presupuesto
 
 """---------------------Head----------------------"""
 
@@ -21,17 +21,17 @@ v.minsize(700,600)
 v.configure(background='white')
 frame= Frame(width=600, height=100, bg='white', background='white' )
 frame.pack()
-canvas = Canvas(width=600, height=100, bg='white')
+canvas = Canvas(width=600, height=100, bg='white',borderwidth=5)
 canvas.pack(expand=NO, fill=BOTH)
 frameP= Frame(width=700, height=100, bg='white', background='white' )
 frameP.pack()
 frameF= Frame(width=700, height=100, bg='white', background='white' )
 frameF.pack()
-canvas2 = Canvas(width=700, height=300, bg='white')
+canvas2 = Canvas(width=700, height=300, bg='white',borderwidth=5)
 canvas2.pack(expand=YES,fill=BOTH)
 frameFres= Frame(width=700, height=100, bg='white', background='white' )
 frameFres.pack()
-canvas3 = Canvas(width=700, height=300, bg='white')
+canvas3 = Canvas(width=700, height=300, bg='white',borderwidth=5)
 canvas3.pack(expand=YES,fill=BOTH)
 
 """---------------------Bodie----------------------"""
@@ -53,54 +53,99 @@ textConv.grid(row=3,column=1,padx=5, pady=5)
 
 #Perdidas por espacio libre
 Label(frameP,text="Perdidas en el espacio libre",font=("Courier",25),bg='white').grid(row=0,column=0)
-Label(canvas2,text='Lfs =', font=('Courier',15),bg='white').grid(row=0, column=0)
-potenciaT= Entry(canvas2,width=10,borderwidth=2)
-potenciaT.grid(row=0, column=1)
-potenciaT.insert(0, 'constante' )
-Label(canvas2,text=' + f ', font=('Courier',15),bg='white').grid(row=0,column=3)
-gananciaT= Entry(canvas2,width=10,borderwidth=2)
-gananciaT.grid(row=0,column=4)
+Label(canvas2,text='Lfs =', font=('Courier',15),bg='white').grid(row=0,column=0)
+frecuenciaT= Entry(canvas2,width=10,borderwidth=2)
+frecuenciaT.grid(row=0,column=2)
+Label(canvas2,text='f', font=('Courier',15),bg='white').grid(row=0,column=1)
 combo1= ttk.Combobox(canvas2,values=["Hz","Mhz","Khz","Ghz"],width=7,foreground='grey')
-combo1.grid(row=0,column=5)
-Label(canvas2,text=' + D ', font=('Courier',15),bg='white').grid(row=0,column=6)
-gananciaR= Entry(canvas2,width=10,borderwidth=2)
-gananciaR.grid(row=0,column=7)
+combo1.grid(row=0,column=3)
+Label(canvas2,text=' + D ', font=('Courier',15),bg='white').grid(row=0,column=4)
+distancia= Entry(canvas2,width=10,borderwidth=2)
+distancia.grid(row=0,column=5)
 combo2= ttk.Combobox(canvas2,values=["cm","m","Km","millas"],width=7,foreground='grey')
-combo2.grid(row=0,column=8)
-Label(canvas2,text=' = ',font=('Courier',15),bg='white').grid(row=0,column=9)
+combo2.grid(row=0,column=6)
+Label(canvas2,text=' = ',font=('Courier',15),bg='white').grid(row=0,column=7)
 resultado = Entry(canvas2,width=10,borderwidth=2)
-resultado.grid(row=0,column=10)
+resultado.grid(row=0,column=8)
 
-
+def caLfs():
+    f=frecuenciaT.get()
+    D=distancia.get()
+    if combo1.get()== "Hz":
+        f= convertir.hzToGhz(f)
+    elif combo1.get() == "Mhz":
+        f= convertir.meToKm(f)
+    elif combo1.get()=="Khz":
+        f=convertir.khzToGhz(f)
+    else:
+        f=f
+    if combo2.get()=="cm":
+        D=convertir.cmToKm(D)
+    elif combo2.get()=="m":
+        D=convertir.meToKm
+    elif combo2.get()=="millas":
+        D=convertir.millasToKm(D)
+    perdidas= Presupuesto() 
+    lfs1= perdidas.lfs(float(f),float(D))
+    resultado.insert(0,"{:.3f}".format(lfs1)) 
+    lfs.insert(0,"{:.3f}".format(lfs1))
+    unidad= "dB"
+    Label(canvas2,text=unidad,font=('Courier',15),bg='white').grid(row=0,column=9)
+    if lfs:
+       lfs.config(state=DISABLED) 
+    else:
+        lfs.config(state=NORMAL)
+Button(canvas2, text="Calcular Lfs", background='blue',width=20,fg='white',command= lambda: caLfs()).grid(row =0, column =10,padx=5, pady=5)
 
 #Friis
 Label(frameF,text="Relacion senal/ruido",font=("Courier",25),bg='white').grid(row=0,column=0)
-Label(canvas2,text='Friis =', font=('Courier',15),bg='white').grid(row=1, column=0)
-potenciaT= Entry(canvas2,width=10,borderwidth=2)
-potenciaT.grid(row=1, column=1)
+Label(canvas2,text='Friis =', font=('Courier',15),bg='white').grid(row=2, column=0)
+Ptx= Entry(canvas2,width=10,borderwidth=2)
+Ptx.grid(row=2, column=1)
 combo1= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
-combo1.grid(row=1,column=2)
-Label(canvas2,text=' + ', font=('Courier',15),bg='white').grid(row=1,column=3)
-gananciaT= Entry(canvas2,width=10,borderwidth=2)
-gananciaT.grid(row=1,column=4)
+combo1.grid(row=2,column=2)
+Label(canvas2,text=' + ', font=('Courier',15),bg='white').grid(row=2,column=3)
+Gtx= Entry(canvas2,width=10,borderwidth=2)
+Gtx.grid(row=2,column=4)
 combo2= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
-combo2.grid(row=1,column=5)
-Label(canvas2,text=' + ', font=('Courier',15),bg='white').grid(row=1,column=6)
-gananciaR= Entry(canvas2,width=10,borderwidth=2)
-gananciaR.grid(row=1,column=7)
+combo2.grid(row=2,column=5)
+Label(canvas2,text=' + ', font=('Courier',15),bg='white').grid(row=2,column=6)
+Grx= Entry(canvas2,width=10,borderwidth=2)
+Grx.grid(row=2,column=7)
 combo3= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
-combo3.grid(row=1,column=8)
-Label(canvas2,text=' - ', font=('Courier',15),bg='white').grid(row=1,column=9)
+combo3.grid(row=2,column=8)
+Label(canvas2,text=' - ', font=('Courier',15),bg='white').grid(row=2,column=9)
 lfs= Entry(canvas2,width=10,borderwidth=2)
-lfs.grid(row=1,column=10)
+lfs.grid(row=2,column=10)
+
 combo4= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
-combo4.grid(row=1,column=11)
+combo4.grid(row=2,column=11)
 
 def insertar(caja,combo):
     caja.configure(state=NORMAL)
     caja.delete(0,END)
     caja.insert(0,combo)
     caja.configure(state=DISABLED)
+
+#PIRE
+
+Label(canvas2,text="PIRE= ",font=("Courier",15),bg="white").grid(row=1,column=0)
+Label(canvas2,text="Gtx",font=("Courier",15),bg="white").grid(row=1,column=1)
+gananciaTx= Entry(canvas2,width=10,borderwidth=2)
+gananciaTx.grid(row=1,column=2)
+comboGa= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
+comboGa.grid(row=1,column=3)
+Label(canvas2,text="Ptx",font=("Courier",15),bg='white').grid(row=1,column=4)
+potenciaTx= Entry(canvas2,width=10,borderwidth=2)
+potenciaTx.grid(row=1,column=5)
+comboPo= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
+comboPo.grid(row=1,column=6)
+perCombo= ttk.Combobox(canvas2,values=['Incluir perdidas'],width=7)
+perCombo.grid(row=1,column=7)
+
+
+
+
 #Conversor de unidades
 
 

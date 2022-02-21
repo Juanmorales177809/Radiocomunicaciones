@@ -3,28 +3,28 @@ import numpy as np
 import calculos
 
 class Presupuesto:
-    def __init__(self,f,D,ptx,gitx,girx,lfs,prx,cminrec):
-        self.c = 3*10**8
-        self.f = f
-        self.wavLegh = self.f/self.c
-        self.D = D
-        self.A = 0
-        self.B = 0
-        self.R = 0
-        self.Ptx = 0
-        self.Gitx = 0
-        self.Girx = 0
-        self.Prx = 0
-        self.fm = 0
-        self.tm =365*24*60
-        self.cminrec=cminrec
+    # def __init__(self,f,D,ptx,gitx,girx,lfs,prx,cminrec):
+    #     self.c = 3*10**8
+    #     self.f = f
+    #     self.wavLegh = self.f/self.c
+    #     self.D = D
+    #     self.A = 0
+    #     self.B = 0
+    #     self.R = 0
+    #     self.Ptx = 0
+    #     self.Gitx = 0
+    #     self.Girx = 0
+    #     self.Prx = 0
+    #     self.fm = 0
+    #     self.tm =365*24*60
+    #     self.cminrec=cminrec
         
     #Perdidas en trayectoria por espacio libre (adimensional)
-    def lfsW(self,D):
+    def lfsW(self,f,D):
         return ((4*np.pi*D)/self.wavLegh)**2
     #Perdidas en trayectoria por espacio libre (Frecuencia en Ghz y distancia en Km)
-    def lfs(self,D):
-        return 92.4 +20*np.log10(self.f)+20*np.log10(D)
+    def lfs(self,f,D):
+        return 92.4 +20*np.log10(f)+20*np.log10(D)
     #Perdidas en trayectoria por espacio libre (Frecuencia en Mhz y distancia en Km)
     def perdidasEspacioLibre(self):
         return 32.4+20*np.log10(self.f)+20*np.log10(self.D)
@@ -61,9 +61,9 @@ class Presupuesto:
         return self.Ptx+self.Gitx+self.Girx-self.lfs
 
     #Calculo de potencia de radio
-    def gananciaSistema(self):
+    def gananciaSistema(self,cmin):
         pass
-    def ptx(self):
+    def ptx(self,cmin):
         return self.gananciaSistema - cmin
     def PIRE(self):
         pass
@@ -85,7 +85,8 @@ class Presupuesto:
         return np.sqrt((calculos.wavLegh(f)*d1*d2)/d1+d2)
     
 if __name__ == "__main__":
-    lost = Presupuesto(1.8,40)
-    d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")
-    print(d, "dB")
-        
+    #lost = Presupuesto(1.8,40)
+    #d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")
+    #print(d, "dB")
+    altura = Presupuesto()
+    print(altura.fresnel(2500,2500,2.4*10**9))

@@ -25,6 +25,17 @@ def meToKm(dm):
     return dm/1000
 def kmToM(km):
     return km*1000
+def cmToKm(cm):
+    return cm/100000
+def millasToKm(millas):
+    return millas*1.609
+def hzToGhz(hz):
+    hz/100000000
+def mhzToGhz(mhz):
+    mhz/1000
+def khzToGhz(khz):
+    return khz/100000
+
 if __name__ == "__main__":
     print(todBm(1000))
     print(megGig(917))
