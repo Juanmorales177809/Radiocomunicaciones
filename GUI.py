@@ -39,10 +39,10 @@ canvas3.pack(expand=YES,fill=BOTH)
 Label(frame,text='RADIOCOMUNICACIONES',background='white', font=("Courier", 25)).grid(row=0,column=0)
 Label(canvas,text="Conversor",background='white',font=('Courier',13)).grid(row=0,column=0)
 Label(canvas,text="Ingrese valor",background='white', font=('Courier',11)).grid(row=1,column=0)
-comboDe= ttk.Combobox(canvas,values=["dB","dBm","W","mW","metros","Kilometros"],width=7,foreground='grey')
+comboDe= ttk.Combobox(canvas,values=["dB","dBm","W","mW","dBd","dBi","metros","Kilometros"],width=7,foreground='grey')
 comboDe.grid(row=1, column=2,padx=5, pady=5)
 Label(canvas,text="=", background='white', font='Courier').grid(row=1,column=4)
-comboTo= ttk.Combobox(canvas,values=["dB","dBm","W","mW","metros","Kilometros"],width=7,foreground='grey')
+comboTo= ttk.Combobox(canvas,values=["dB","dBm","W","mW","dBd","dBi","metros","Kilometros"],width=7,foreground='grey')
 comboTo.grid(row=1, column=5,padx=5, pady=5)
 ent1 = Entry(canvas,width=20,borderwidth=2)
 ent1.grid(row=1,column=1)
@@ -140,8 +140,15 @@ potenciaTx= Entry(canvas2,width=10,borderwidth=2)
 potenciaTx.grid(row=1,column=5)
 comboPo= ttk.Combobox(canvas2,values=["dB","dBm","W","mW"],width=7,foreground='grey')
 comboPo.grid(row=1,column=6)
-perCombo= ttk.Combobox(canvas2,values=['Incluir perdidas'],width=7)
+perCombo= ttk.Combobox(canvas2,values=['Incluir perdidas', "No incluir Perdidas"],width=15)
 perCombo.grid(row=1,column=7)
+def calPerdidas():
+    perdidas = Entry(canvas2,width=10,borderwidth=2)
+    perdidas.grid(row=1,column=9)
+
+Button(canvas2, text="Agregar Perdidas", background='blue',width=20,fg='white',command= lambda: calPerdidas()).grid(row =1, column =8,padx=5, pady=5)
+
+
 
 
 
@@ -252,6 +259,26 @@ def agregar():
                 insertar(textUnit,'Kilometros')
             else:
                 messagebox.showerror("Error", message='No es una entrada valida')
+        elif comboDe.get() == "dBd":
+            if comboTo.get() == "dBi":
+                conv= convertir.dBdTodBi(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'dBi')
+            elif comboTo.get() == "dBd":
+                insertar(textConv,num)
+                insertar(textUnit,'dBd')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida') 
+        elif comboDe.get() == "dBi":
+            if comboTo.get() == "dBd":
+                conv= convertir.dBiTodBd(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'dBd')
+            elif comboTo.get() == "dBi":
+                insertar(textConv,num)
+                insertar(textUnit,'dBi')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida')
     except:
         messagebox.showerror("Error", message='Ingrese valores')
 #Zonas de fresnel
@@ -278,7 +305,7 @@ def calcula():
     D1= d1.get()
     D2= d2.get()
     f= lamb.get()
-    Fresnel = presupuesto.Presupuesto()
+    Fresnel = Presupuesto()
     Fr= Fresnel.fresnel(D1,D2,f)
     insertar(altura,Fr)
 Button(canvas3, text="Calcular altura antena", background='blue',width=20,fg='white',command= lambda: calcula()).grid(row =0, column = 8,padx=5, pady=5)

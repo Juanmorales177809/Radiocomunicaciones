@@ -35,6 +35,10 @@ def mhzToGhz(mhz):
     mhz/1000
 def khzToGhz(khz):
     return khz/100000
+def dBdTodBi(dBd):
+    return dBd + 2.15
+def dBiTodBd(dBi):
+    return dBi-2.15
 
 if __name__ == "__main__":
     print(todBm(1000))
