@@ -1,11 +1,12 @@
 from cProfile import label
+from calendar import c
 from msilib.schema import ComboBox
 from tkinter import *
 from tkinter import font
 from turtle import back, color
 from matplotlib.colorbar import Colorbar
 from tkinter import messagebox
-from matplotlib.pyplot import colorbar
+from matplotlib.pyplot import colorbar, text
 from pyparsing import col
 import convertir
 from tkinter import ttk
@@ -293,11 +294,15 @@ Label(canvas3,text='D1=',background="white",font=("Courier")).grid(row=0,column=
 d1= Entry(canvas3, width=10, borderwidth=2)
 d1.grid(row=0,column=4)
 Label(canvas3,text='D2=',background="white",font=("Courier")).grid(row=0,column=5)
+combod1= ttk.Combobox(canvas3,values=['cm','m','Km'],width=7)
+combod1.grid(row=0,column=5)
 d2= Entry(canvas3, width=10, borderwidth=2)
 d2.grid(row=0,column=6)
-Label(canvas3,text='Zona=',background="white",font=("Courier")).grid(row=0,column=7)
+combod2= ttk.Combobox(canvas3,values=['cm','m','Km'],width=7)
+combod2.grid(row=0,column=7)
+Label(canvas3,text='n',font=("Courier")).grid(row=0,column=8)
 n= Entry(canvas3, width=10, borderwidth=2)
-n.grid(row=0,column=8)
+n.grid(row=0,column=9)
 Label(canvas3,text='rn= ',background='white',font=("Courier")).grid(row=1,column=0)
 altura= Entry(canvas3, width=10,borderwidth=2)
 altura.grid(row=1,column=1)
@@ -308,7 +313,7 @@ def calcula():
     Fresnel = Presupuesto()
     Fr= Fresnel.fresnel(D1,D2,f)
     insertar(altura,Fr)
-Button(canvas3, text="Calcular altura antena", background='blue',width=20,fg='white',command= lambda: calcula()).grid(row =0, column = 8,padx=5, pady=5)
+Button(canvas3, text="Calcular altura antena", background='blue',width=20,fg='white',command= lambda: calcula()).grid(row =0, column = 10,padx=5, pady=5)
 
 
 
