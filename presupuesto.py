@@ -3,21 +3,9 @@ import numpy as np
 import calculos
 
 class Presupuesto:
-    # def __init__(self,f,D,ptx,gitx,girx,lfs,prx,cminrec):
-    #     self.c = 3*10**8
-    #     self.f = f
-    #     self.wavLegh = self.f/self.c
-    #     self.D = D
-    #     self.A = 0
-    #     self.B = 0
-    #     self.R = 0
-    #     self.Ptx = 0
-    #     self.Gitx = 0
-    #     self.Girx = 0
-    #     self.Prx = 0
-    #     self.fm = 0
-    #     self.tm =365*24*60
-    #     self.cminrec=cminrec
+    def __init__(self):
+        self.k=1.380*10**-23
+        self.tk=290
         
     #Perdidas en trayectoria por espacio libre (adimensional)
     def lfsW(self,f,D):
@@ -55,18 +43,23 @@ class Presupuesto:
         self.factorProba(prob)
         return 30*np.log10(self.D)+10*np.log10(6*self.A*self.B*self.f)-10*np.log10(1-self.R)-70
     #>Ecuación de Friss, solo recibe valores en decibeles
-    
+    #Potencia de ruido
+    def potenciaRuido(self,B):
+        return '{:.2f}'.format( 10*np.log10(self.k*self.tk*B))
     #Calculo del Friis
     def friis(self):
         return self.Ptx+self.Gitx+self.Girx-self.lfs
 
     #Calculo de potencia de radio
-    def gananciaSistema(self,cmin):
-        pass
-    def ptx(self,cmin):
-        return self.gananciaSistema - cmin
-    def PIRE(self):
-        pass
+    def gananciaSistema(self,Rtx,cmin):
+        return Rtx - cmin
+    def rtxs(self,Fm,Lp,Lf,Lb,At,Ar):
+        return Fm+Lp+Lf+Lb-At-Ar
+    def rtx(self,cmin):
+        return self.gananciaSistema + cmin
+    #Calculod el PIRE
+    def PIRE(self,Rtx,pc,Gtx):
+        return Rtx-pc+Gtx
     def cmin(self,gananciaSistema):
         self.ptx-gananciaSistema
     #Pérdida por ramificación
@@ -80,13 +73,19 @@ class Presupuesto:
         elif self.f ==  8.0:
             pass
         
-    #Zona de fresnel 1
-    def fresnel(self,d1,d2,f):
-        return np.sqrt((calculos.wavLegh(f)*d1*d2)/d1+d2)
+    #Altura de la antena
+    def rn(self,d1,d2,f):
+        return '{:.2f}'.format(np.sqrt((calculos.wavLegh(f)*d1*d2)/(d1+d2)))
+    #Zona uno de fresnel 
+    def zonaUno(self,f,D):
+        return 17.32*np.sqrt(D/(4*f))
+    #Horizonte de radio
+    
     
 if __name__ == "__main__":
     #lost = Presupuesto(1.8,40)
     #d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")
     #print(d, "dB")
     altura = Presupuesto()
-    print(altura.fresnel(2500,2500,2.4*10**9))
+    print(altura.potenciaRuido(10*10**6))
+    print(altura.rn(9751,9751,915*10**6))

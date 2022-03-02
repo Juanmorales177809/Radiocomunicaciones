@@ -74,7 +74,7 @@ def caLfs():
     if combo1.get()== "Hz":
         f= convertir.hzToGhz(f)
     elif combo1.get() == "Mhz":
-        f= convertir.meToKm(f)
+        f= convertir.megGig(f)
     elif combo1.get()=="Khz":
         f=convertir.khzToGhz(f)
     else:
@@ -219,6 +219,26 @@ def agregar():
                 insertar(textUnit,'mW')
             else:
                 messagebox.showerror("Error", message='No es una entrada valida')
+        elif comboDe.get() == "dBm":
+            if comboTo.get() == "W":
+                conv= convertir.dBmDB(num)
+                conv= convertir.toWats(conv)
+                insertar(textConv,conv)
+                insertar(textUnit,'W')
+            elif comboTo.get() == "dBm":
+                messagebox.showerror("No puede elegir las mismas unidades")
+                insertar(textConv,conv)
+                insertar(textUnit,'dBm')    
+            elif comboTo.get()=="dB":
+                conv= convertir.dBmDB(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'dB')
+            elif comboTo.get()=="mW":
+                conv= convertir.tomWats(num)
+                insertar(textConv,conv)
+                insertar(textUnit,'mW')
+            else:
+                messagebox.showerror("Error", message='No es una entrada valida')
         elif comboDe.get() == "mW":
             if comboTo.get() == "W":
                 conv= convertir.mWatsWats(num)
@@ -306,7 +326,7 @@ def calcula():
     D2= d2.get()
     f= lamb.get()
     Fresnel = Presupuesto()
-    Fr= Fresnel.fresnel(D1,D2,f)
+    Fr= Fresnel.rn(D1,D2,f)
     insertar(altura,Fr)
 Button(canvas3, text="Calcular altura antena", background='blue',width=20,fg='white',command= lambda: calcula()).grid(row =0, column = 8,padx=5, pady=5)
 
