@@ -1,3 +1,4 @@
+from pickle import READONLY_BUFFER
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
@@ -27,6 +28,7 @@ frame3.pack(fill='both',expand=True)
 imageForum= tk.PhotoImage(file="./assets/antenna.png")
 imageForum1= tk.PhotoImage(file="./assets/convertir.png")
 imageForum2= tk.PhotoImage(file="./assets/maps.png")
+imageForum3= tk.PhotoImage(file="./assets/Guardar.png")
 #note.add(frame1,text='Radioenlace',image=imageForum,compound=tk.RIGHT,padding=20)
 note.add(frame1,image=imageForum,state=NORMAL)
 note.add(frame2,image=imageForum1)
@@ -101,7 +103,7 @@ Label(frame1, text="dB",font=(10),background='#d7f3bc').grid(row=9,column=2,stic
 Label(frame1, text="Sensibilidad Rx :",font=(10),background='#d7f3bc').grid(row=10,column=0,sticky=E)
 ent6 = Entry(frame1,width=10,borderwidth=3)
 ent6.grid(row=10,column=1)
-combo6= ttk.Combobox(frame1,values=["dBm","μV"],width=7)
+combo6= ttk.Combobox(frame1,values=["dBm","μV"],width=7,state=READONLY_BUFFER)
 combo6.grid(row=10, column=2,padx=5,pady=5,sticky=W)
 
 #Ancho de banda
@@ -178,12 +180,11 @@ def resultados():
     ventana.config(bg='#d7f3bc')
     ventana.iconbitmap("./assets/antena.ico")
     ventana.title("Resultados")
-    frames= Frame(ventana,background='#d7f3bc',width=300, height=20)
+    frames= Frame(ventana,background='white',width=300, height=50)
     frames.pack()
+    Button(frames,image= "Guardar.png", command=lambda: ventana.destroy()).grid(row=0,column=0)
     
-    Button(ventana,image="./assets/Guardar.png",command=lambda: resultados()).grid(row=0,column=0)   
-    
-
+#Button(frame1,image= imageForum3, command=lambda: ventana.destroy()).grid(row=18,column=0)
 radioValue= IntVar()
 Label(frame1, text="Modelo de perdidas ",font=(10),background='#d7f3bc').grid(row=13,column=0,sticky=E)
 radio1= Radiobutton(frame1,text="Path Loss", variable=radioValue,value=0,background='#d7f3bc')

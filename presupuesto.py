@@ -6,6 +6,7 @@ class Presupuesto:
     def __init__(self):
         self.k=1.380*10**-23
         self.tk=290
+        self.f= 0
         
     #Perdidas en trayectoria por espacio libre (adimensional)
     def lfsW(self,f,D):
@@ -84,8 +85,15 @@ class Presupuesto:
     def zonaUno(self,f,D):
         return 17.32*np.sqrt(D/(4*f))
     #Horizonte de radio
+
+class Okumura(Presupuesto):
     
-    
+    def hata(self,media,peq,sub,f):
+        pass
+    def select(self):
+        pass
+class Cost(Presupuesto):
+    pass
 if __name__ == "__main__":
     #lost = Presupuesto(1.8,40)
     #d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")
