@@ -19,9 +19,13 @@ class Presupuesto:
     
     def factorRugo(self,val):
         if val == "Agua o terreno liso":
-            self.A = 4
-        elif val == "Terreno Promedio":
-            self.A = 1
+            self.A = 4.0
+        elif val == "Sembrados densos, arenales":
+            self.A= 3.0
+        elif val == "Bosques":
+            self.A = 2.0 
+        elif val == "Terreno normal":
+            self.A = 1.0
         elif val == "Aspero y montanoso":
             self.A = 0.25
     def factorProba(self,prob):

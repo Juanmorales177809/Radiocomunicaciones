@@ -1,3 +1,4 @@
+
 import numpy as np
 
 
@@ -40,6 +41,3 @@ def dBdTodBi(dBd):
 def dBiTodBd(dBi):
     return dBi-2.15
 
-if __name__ == "__main__":
-    print(todBm(1000))
-    print(megGig(917))
