@@ -4,6 +4,7 @@ from tkinter import ttk
 import tkinter as tk
 from tkinter import messagebox
 from turtle import st
+import Util
 
 
 
@@ -119,79 +120,117 @@ ent7.grid(row=12,column=1,pady=5)
 Label(frame1, text="dBm",font=(10),background='#d7f3bc').grid(row=12,column=2,sticky=W)
 
 #Modelo de perdidas
-def selec():
-    ventana = Tk()
-    ventana.geometry("275x175")
-    ventana.resizable(0,0)
-    ventana.config(bg='#d7f3bc')
-    ventana.iconbitmap("./assets/antena.ico")
-    ventana.title("Okumura-Hata")
-    radioValor=IntVar()
-    Label(ventana,text="Altura efectiva antena Tx",background='#d7f3bc').grid(row=0,column=0)
-    entPe= Entry(ventana,width=17,borderwidth=3)
-    entPe.grid(row=0,column=1,pady=5)
-    Label(ventana,text='m',background='#d7f3bc').grid(row=0, column=2,sticky=W)
-    Label(ventana,text="Altura efectiva antena Rx",background='#d7f3bc').grid(row=1,column=0)
-    entPe= Entry(ventana,width=17,borderwidth=3)
-    entPe.grid(row=1,column=1,pady=5)
-    Label(ventana,text='m',background='#d7f3bc').grid(row=1, column=2,sticky=W)
-    radioPe= Radiobutton(ventana,text="Ciudad pequeña",variable=radioValor,value=0,background='#d7f3bc')
-    radioPe.grid(row=2,column=1,sticky=W)
-    radioPe1= Radiobutton(ventana,text="Ciudad pequeña",variable=radioValor,value=1,background='#d7f3bc')
-    radioPe1.grid(row=3,column=1,sticky=W)
-    checkValue= BooleanVar()
-    checkValue.set(True)
-    check= Checkbutton(ventana,text="Zona Suburbana",var=checkValue,background='#d7f3bc')
-    check.grid(row=4,column=1)
-    Button(ventana,text="ACEPTAR",background='#2A4014',width=30,fg='white',command=lambda: ventana.destroy()).grid(row=5,column=0,columnspan=2)
+class SelecOkamura:
+    def __init__(self):
+        self.heTx=0
+        self.heRx=0
+        self.ciudad=0
+        self.sub=False
+    
+    def guardar(self,ventana,heRk,heTx,radio):
+        self.heRx= float(heRk)
+        self.heTx= float(heTx)
+        self.ciudad= radio
+        ventana.destroy()
+    
+    def sumar(self):
+        return str(self.heRx+self.heTx)
+
+    def selecOkumura(self):
+        ventana = Tk()
+        ventana.geometry("275x175")
+        ventana.resizable(0,0)
+        ventana.config(bg='#d7f3bc')
+        ventana.iconbitmap("./assets/antena.ico")
+        ventana.title("Okumura-Hata")
+        radioValor=IntVar()
+        Label(ventana,text="Altura efectiva antena Tx",background='#d7f3bc').grid(row=0,column=0)
+        entPe= Entry(ventana,width=17,borderwidth=3)
+        entPe.grid(row=0,column=1,pady=5)
+        Label(ventana,text='m',background='#d7f3bc').grid(row=0, column=2,sticky=W)
+        Label(ventana,text="Altura efectiva antena Rx",background='#d7f3bc').grid(row=1,column=0)
+        entPe1= Entry(ventana,width=17,borderwidth=3)
+        entPe1.grid(row=1,column=1,pady=5)
+        Label(ventana,text='m',background='#d7f3bc').grid(row=1, column=2,sticky=W)
+        radioPe= Radiobutton(ventana,text="Ciudad pequeña",variable=radioValor,value=0,background='#d7f3bc')
+        radioPe.grid(row=2,column=1,sticky=W)
+        radioPe1= Radiobutton(ventana,text="Ciudad pequeña",variable=radioValor,value=1,background='#d7f3bc')
+        radioPe1.grid(row=3,column=1,sticky=W)
+        checkValue= BooleanVar()
+        checkValue.set(True)
+        check= Checkbutton(ventana,text="Zona Suburbana",var=checkValue,background='#d7f3bc')
+        check.grid(row=4,column=1)
+        Button(ventana,text="ACEPTAR",background='#2A4014',width=30,fg='white',command=lambda: self.guardar(ventana,entPe.get(),entPe1.get(),radioValor)).grid(row=5,column=0,columnspan=2)
+        
+class Cost(SelecOkamura):
+    def __init__(self):
+        self.correcion= 0
+
+    def cost(self):
+        ventana = Tk()
+        ventana.geometry("300x200")
+        ventana.resizable(0,0)
+        ventana.config(bg='#d7f3bc')
+        ventana.iconbitmap("./assets/antena.ico")
+        ventana.title("COST 231")
+        radioValCo= IntVar()
+        Label(ventana,text="Altura efectiva antena Tx",background='#d7f3bc').grid(row=0,column=0)
+        entCo= Entry(ventana,width=17,borderwidth=3)
+        entCo.grid(row=0,column=1,pady=5)
+        Label(ventana,text='m',background='#d7f3bc').grid(row=0, column=2,sticky=W)
+        Label(ventana,text="Altura efectiva antena Rx",background='#d7f3bc').grid(row=1,column=0)
+        entCo1= Entry(ventana,width=17,borderwidth=3)
+        entCo1.grid(row=1,column=1,pady=5)
+        Label(ventana,text='m',background='#d7f3bc').grid(row=1, column=2,sticky=W)
+        Label(ventana,text="Factor de Corrección",background='#d7f3bc').grid(row=2,column=0)
+        radioCo= Radiobutton(ventana,text="Ciudad densa",variable=radioValCo,value=0,background='#d7f3bc')
+        radioCo.grid(row=2, column=1,sticky=W)
+        radioCo1= Radiobutton(ventana,text="Ciudad",variable=radioValCo,value=-5,background='#d7f3bc')
+        radioCo1.grid(row=3, column=1,sticky=W)
+        radioCo2= Radiobutton(ventana,text="Barrios campestres",variable=radioValCo,value=-10,background='#d7f3bc')
+        radioCo2.grid(row=4, column=1,sticky=W)
+        radioCo3= Radiobutton(ventana,text="Rural",variable=radioValCo,value=-17,background='#d7f3bc')
+        radioCo3.grid(row=5, column=1,sticky=W)
+        Button(ventana,text="ACEPTAR",background='#2A4014',width=30,fg='white',
+            command=lambda: self.guardar(ventana,entCo.get(),entCo1.get(),radioValCo)).grid(row=6,column=0,columnspan=2)
+        
     
 
-def cost():
-    ventana = Tk()
-    ventana.geometry("300x200")
-    ventana.resizable(0,0)
-    ventana.config(bg='#d7f3bc')
-    ventana.iconbitmap("./assets/antena.ico")
-    ventana.title("COST 231")
-    radioValCo= IntVar()
-    Label(ventana,text="Altura efectiva antena Tx",background='#d7f3bc').grid(row=0,column=0)
-    entPe= Entry(ventana,width=17,borderwidth=3)
-    entPe.grid(row=0,column=1,pady=5)
-    Label(ventana,text='m',background='#d7f3bc').grid(row=0, column=2,sticky=W)
-    Label(ventana,text="Altura efectiva antena Rx",background='#d7f3bc').grid(row=1,column=0)
-    entPe= Entry(ventana,width=17,borderwidth=3)
-    entPe.grid(row=1,column=1,pady=5)
-    Label(ventana,text='m',background='#d7f3bc').grid(row=1, column=2,sticky=W)
-    Label(ventana,text="Factor de Corrección",background='#d7f3bc').grid(row=2,column=0)
-    radioCo= Radiobutton(ventana,text="Ciudad densa",variable=radioValCo,value=0,background='#d7f3bc')
-    radioCo.grid(row=2, column=1,sticky=W)
-    radioCo1= Radiobutton(ventana,text="Ciudad",variable=radioValCo,value=-5,background='#d7f3bc')
-    radioCo1.grid(row=3, column=1,sticky=W)
-    radioCo2= Radiobutton(ventana,text="Barrios campestres",variable=radioValCo,value=-10,background='#d7f3bc')
-    radioCo2.grid(row=4, column=1,sticky=W)
-    radioCo3= Radiobutton(ventana,text="Rural",variable=radioValCo,value=-17,background='#d7f3bc')
-    radioCo3.grid(row=5, column=1,sticky=W)
-    Button(ventana,text="ACEPTAR",background='#2A4014',width=30,fg='white',command=lambda: ventana.destroy()).grid(row=6,column=0,columnspan=2)
+class Result(SelecOkamura):
+    def __init__(self):
+        pass
     
-def resultados():
-    ventana = Tk()
-    ventana.geometry("300x500")
-    ventana.resizable(0,0)
-    ventana.config(bg='#d7f3bc')
-    ventana.iconbitmap("./assets/antena.ico")
-    ventana.title("Resultados")
-    frames= Frame(ventana,background='white',width=300, height=50)
-    frames.pack()
-    Button(frames,image= "Guardar.png", command=lambda: ventana.destroy()).grid(row=0,column=0)
+    def resultados(self):
+        ventana = Tk()
+        ventana.geometry("300x500")
+        ventana.resizable(0,0)
+        ventana.config(bg='#d7f3bc')
+        ventana.iconbitmap("./assets/antena.ico")
+        ventana.title("Resultados")
+        #frames= Frame(ventana,background='white',width=300, height=50)
+        #frames.pack()
+        #Button(frames,image= "Guardar.png", command=lambda: ventana.destroy()).grid(row=0,column=0)
+        Label(ventana,text=sumar(),font=(10)).grid(row=0, column=0)
+        entResult= Entry(ventana,width=10,borderwidth=3)
+        entResult.grid(row=0, column=1)
+        
+
+
+def oku():
+    okumura= SelecOkamura()
+    okumura.selecOkumura()
+def cos():
+    cost= Cost()
+    cost.cost()
     
 #Button(frame1,image= imageForum3, command=lambda: ventana.destroy()).grid(row=18,column=0)
 radioValue= IntVar()
 Label(frame1, text="Modelo de perdidas ",font=(10),background='#d7f3bc').grid(row=13,column=0,sticky=E)
 radio1= Radiobutton(frame1,text="Path Loss", variable=radioValue,value=0,background='#d7f3bc')
 radio1.grid(row=13,column=1,sticky=W)
-radio2= Radiobutton(frame1,text="Okumura-Hata", variable=radioValue,value=1,background='#d7f3bc',command=lambda: selec())
+radio2= Radiobutton(frame1,text="Okumura-Hata", variable=radioValue,value=1,background='#d7f3bc',command=lambda: oku())
 radio2.grid(row=14,column=1,sticky=W)
-radio3= Radiobutton(frame1,text="Cost 321", variable=radioValue,value=2,background='#d7f3bc',command=lambda: cost())
+radio3= Radiobutton(frame1,text="Cost 321", variable=radioValue,value=2,background='#d7f3bc',command=lambda: cos())
 radio3.grid(row=15,column=1,sticky=W)
 
 
@@ -203,7 +242,9 @@ Label(frame1, text="dB",font=(10),background='#d7f3bc').grid(row=16,column=2,sti
 
 def calcular():
     pass
-
+def resultados():
+    result = Result()
+    result.resultados()
 #Calcular
 Button(frame1,text="CALCULAR",background='#2A4014',width=30,fg='white',command=lambda: resultados()).grid(row=17,column=1,columnspan=2)
 
