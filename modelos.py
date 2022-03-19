@@ -1,4 +1,4 @@
-
+from math import dist
 from numpy import log10
 
 class ModeloPerdidas:
@@ -12,12 +12,15 @@ class Path(ModeloPerdidas):
         lfs= 92.44+20*log10(self.frecuencia)+20*log10(self.distancia)
         return lfs
 
-class Okumura(ModeloPerdidas):
-    def __init__(self,hte=1,hre=1,ciudadGrande=True,subUrbano=True):
+class Okumura():
+    def __init__(self,frecuencia,distancia,hte,hre,ciudadGrande,subUrbano):
+        self.frecuencia= frecuencia
+        self.distancia= distancia
         self.hte= hte
         self.hre= hre
         self.ciudadGrande= ciudadGrande
         self.subUrbano= subUrbano
+        
     
     def calcularA(self):
         if self.ciudadGrande:
@@ -40,17 +43,19 @@ class Okumura(ModeloPerdidas):
 class Cost(Okumura):
 
     def __init__(self,frecuencia,distancia,hte=1,hre=1,ciudadGrande=True,subUrbano=True):
-        ModeloPerdidas.__init__(ModeloPerdidas, frecuencia, distancia)
-        Okumura.__init__(Okumura,hte=1,hre=1,ciudadGrande=True,subUrbano=True)
+        ModeloPerdidas.__init__(ModeloPerdidas, frecuencia, distancia)#Importar contructor de clase madre
+        Okumura.__init__(Okumura,frecuencia,distancia ,hte=1,hre=1,ciudadGrande=True,subUrbano=True)#Importar constructor clase hija
     def calcular(self,c):
         correction = {"Ciudad densa": 0, "Ciudad":-5,"Barrios campestres": -10, "Rural":-17}
         lp= 46.3+33.9*log10(self.frecuencia)-13.82*log10(self.hte)
         -self.calcularA()*self.hre+(44.9-6.55*log10(self.hte))*log10(self.distancia)+correction[c]
         return lp
 
-if __name__ == "__main__":
-    modelo= Cost(2.4,10,2,4)
-    print(modelo.calcular("Ciudad densa"))
+# if __name__ == "__main__":
+#     modelo= Cost(2.4,10)
+#     print(modelo.calcular("Ciudad densa"))
+#     model1 = Okumura(2.4,10,4,4,False,True)
+#     print(model1.calcularLb())
     
     
 

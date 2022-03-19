@@ -40,4 +40,10 @@ def dBdTodBi(dBd):
     return dBd + 2.15
 def dBiTodBd(dBi):
     return dBi-2.15
+def GhztoHz(Ghz):
+    return Ghz* 10**9
+def KhztoHz(Khz):
+    return Khz * 10**3
+def MhztoHz(Mhz):
+    return Mhz*10**6
 
