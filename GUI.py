@@ -167,13 +167,14 @@ class SelecOkamura:
         self.entPe1= Entry(ventana,width=17,borderwidth=3)
         self.entPe1.grid(row=3,column=1,pady=5)
         Label(ventana,text='m',background='#d7f3bc').grid(row=3, column=2,sticky=W)
-        radioPe= Radiobutton(ventana,text="Ciudad Grande",variable=self.radioValor,value=0,background='#d7f3bc',command=self.selec())
+        radioPe= Radiobutton(ventana,text="Ciudad Grande",variable=self.radioValor,value=0,background='#d7f3bc')
         radioPe.grid(row=4,column=1,sticky=W)
-        radioPe1= Radiobutton(ventana,text="Ciudad pequeña",variable=self.radioValor,value=1,background='#d7f3bc',command=self.selc1())
+        radioPe1= Radiobutton(ventana,text="Ciudad pequeña",variable=self.radioValor,value=1,background='#d7f3bc')
         radioPe1.grid(row=5,column=1,sticky=W)
+        Label(ventana,textvariable=self.radioValor).grid(row=5,column=2)
         self.checkValue= BooleanVar()
         self.checkValue.set(True)
-        check= Checkbutton(ventana,text="Zona Suburbana",var=self.checkValue,background='#d7f3bc',command=self.selc2())
+        check= Checkbutton(ventana,text="Zona Suburbana",var=self.checkValue,background='#d7f3bc')
         check.grid(row=6,column=1)
         buto= Button(ventana,text="CALCULAR",background='#2A4014',width=30,fg='white',
                     command=lambda: self.calcular())
@@ -182,13 +183,15 @@ class SelecOkamura:
         self.result= Entry(ventana,borderwidth=3)
         self.result.grid(row=8, column=1,pady=5,padx=5)
         Label(ventana,text="dB ",background='#d7f3bc').grid(row=8, column=2,sticky=W)
-        self.sub= False
-    def selec(self):
-        self.ciudad=False
-    def selc1(self):
-        self.ciudad=True
-    def selc2(self):
-        self.sub = True
+        def radio():
+            if self.radioValor==0:
+                self.ciudad=False
+            elif self.radioValor==1
+        self.sub = False
+
+    
+    
+    
     def calcular(self):
         # try: 
         if self.combo.get()=='m':
@@ -211,16 +214,18 @@ class SelecOkamura:
         else:
             f= float(self.entCo1.get())
             #messagebox.showwarning("Alerta", "Datos no validos")
+    
+
 
         hte= float(self.entPe.get())
         hre= float(self.entPe1.get())
+        modelo= Okumura(f,d,hte,hre,self.ciudad,self.sub)
+        if self.checkValue:
+            lp = modelo.calcular()
+        else:
+            lp= modelo.calcularLb()
         
-        sub= self.checkValue
-        
-        modelo= Okumura(f,d,hte,hre,True,False)
-
-        lp = modelo.calcular()
-        print(self.ciudad,self.sub)
+        print(self.ciudad)
         self.result.configure(state=NORMAL)
         self.result.delete(0, END)
         self.result.insert(0,"{:.3f}".format(lp))
