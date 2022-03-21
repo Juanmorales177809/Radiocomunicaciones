@@ -13,32 +13,31 @@ class Path(ModeloPerdidas):
         return lfs
 
 class Okumura():
-    def __init__(self,frecuencia,distancia,hte,hre,ciudadGrande,subUrbano):
+    def __init__(self,frecuencia,distancia,hte,hre):
         self.frecuencia= frecuencia
         self.distancia= distancia
         self.hte= hte
         self.hre= hre
-        self.ciudadGrande= ciudadGrande
-        self.subUrbano= subUrbano
+        
         
     
-    def calcularA(self):
-        if self.ciudadGrande:
+    def calcularA(self,ciudad):
+        if ciudad ==0:
             if self.frecuencia <= 200*10**6:
-                a = 8.29*(log10(1.54*self.hre))**2-1.1
-            else: 
-                a= 3.2*log10(11.75*self.hre)**2-4.97
+                return 8.29*(log10(1.54*self.hre))**2-1.1
+            else:
+                return 3.2*log10(11.75*self.hre)**2-4.97
         else:
-            a= (1.1*log10(self.frecuencia-0.7))*self.hre-(1.56*log10(self.frecuencia-0.8))
-        return a
-    def calcularLb(self):
-        if self.subUrbano:
-            lb = self.calcular()-2*(log10(self.frecuencia/28))**2-5.4
-            return lb
-    def calcular(self):
-        lp= 69.55+26.16*log10(self.frecuencia)-13.82*log10(self.hte)-self.calcularA()
+            return (1.1*log10(self.frecuencia-0.7))*self.hre-(1.56*log10(self.frecuencia-0.8))
+        
+    def calcular(self,ciudad,urbano):
+        lp= 69.55+26.16*log10(self.frecuencia)-13.82*log10(self.hte)-self.calcularA(ciudad)
         +(44.9-6.55*log10(self.hte))*log10(self.distancia)
-        return lp
+        if urbano:
+            return lp-2*(log10(self.frecuencia/28))**2-5.4
+        else:
+            return lp
+        
 
 class Cost(Okumura):
 
