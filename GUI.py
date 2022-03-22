@@ -49,7 +49,20 @@ note.add(frame1,image=imageForum,state=NORMAL)
 # note.add(frame5,image=imageForum,state=NORMAL)
 note.add(frame3,image=imageForum2)
 note.add(frame2,image=imageForum1)
-
+menubar= Menu(v)
+v.config(menu=menubar)
+file= Menu(menubar)
+# menubar.add_cascade(label="Archivo", menu=file)
+# helpmenu = Menu(menubar)
+# menubar.add_cascade(label="Ayuda", menu=helpmenu)
+# Menu(menubar, tearoff=0)
+# helpmenu = Menu(menubar, tearoff=0)
+# filemenu.add_command(label="Nuevo")
+# filemenu.add_command(label="Abrir")
+# filemenu.add_command(label="Guardar")
+# filemenu.add_command(label="Cerrar")
+# filemenu.add_separator()
+# filemenu.add_command(label="Salir", command=v.quit)
 
 
 
@@ -194,16 +207,60 @@ Label(frame2, text="dB",font=(10)).grid(row=17,column=2,sticky=W)
 Button(frame2,text=perdida,background='#336DBA',width=30,fg='white',command=lambda: resultados()).grid(row=17,column=0)
 def resultados():
     print(radioValue)
-class SelecOkamura:
+
+class Modelos:
+    
+    def enviar(self,lfs,f,d,uf,ud):
+            perdidas.configure(state=NORMAL)
+            perdidas.delete(0, END)
+            perdidas.insert(0,"{:.3f}".format(lfs))
+            perdidas.configure(state=DISABLED)
+            distancia.configure(state=NORMAL)
+            distancia.delete(0, END)
+            distancia.insert(0,"{:.3f}".format(d))
+            distancia.configure(state=DISABLED)
+            frecuencia.configure(state=NORMAL)
+            frecuencia.delete(0, END)
+            frecuencia.insert(0,"{:.3f}".format(f))
+            frecuencia.configure(state=DISABLED)
+            combof.configure(state=NORMAL)
+            combof.delete(0, END)
+            combof.insert(0,uf)
+            combof.configure(state=DISABLED)
+            combod.configure(state=NORMAL)
+            combod.delete(0, END)
+            combod.insert(0,ud)
+            combod.configure(state=DISABLED)
+    def convertirUnidades(self,d,f,uf,ud):
+        # try:
+        
+        if ud=='Milles':
+            d= convertir.millasToKm(d)
+            d= convertir.kmToM(d)
+        elif ud=="Km":
+            d= convertir.kmToM(d)
+        if uf== 'MHz':
+            f= convertir.MhztoHz(f)
+        elif uf== 'KHz':
+            f= convertir.KhztoHz(f)
+        elif uf== 'GHz':
+            f= convertir.GhztoHz(f)
+        
+        return d,f
+    def asignar(self,lp):
+        self.resultado.configure(state=NORMAL)
+        self.resultado.delete(0, END)
+        self.resultado.insert(0,"{:.3f}".format(lp))
+        self.resultado.configure(state=DISABLED)
+
+class SelecOkamura(Modelos):
 
     def __init__(self):
         self.ciudad=IntVar(value=0)
         self.sub= BooleanVar()
 
-    
     def ventana(self):
-        
-        ventana = Tk()
+        ventana = Toplevel()
         ventana.geometry("350x400")
         ventana.resizable(0,0)
         # ventana.config(bg='#d7f3bc')
@@ -238,7 +295,7 @@ class SelecOkamura:
         Button(ventana,text="Lp",background='#336DBA',width=15,fg='white',
                     command=lambda: self.calcular()).grid(row=7,column=0,padx=15)
         Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
-                command=lambda: self.calcular()).grid(row=8,column=1,pady=30)
+                command=lambda: self.enviar(self.lp,float(self.distancia.get()),float(self.frecuencia.get()),self.combof.get(),self.comboD.get())).grid(row=8,column=1,pady=30)
         Label(ventana,text="dB").grid(row=7, column=2,sticky=W)
         self.resultado= Entry(ventana,borderwidth=3,width=17)
         self.resultado.grid(row=7, column=1)
@@ -247,131 +304,100 @@ class SelecOkamura:
         
     
     def calcular(self):
-        # try:
         d= float(self.distancia.get()) 
         f= float(self.frecuencia.get())
-        if self.comboD.get()=='Milles':
-            d= convertir.millasToKm(d)
-            d= convertir.kmToM(d)
-        elif self.comboD.get()=="Km":
-            d= convertir.kmToM(d)
-        if self.combof.get()== 'MHz':
-            f= convertir.MhztoHz(f)
-        elif self.combof.get()== 'KHz':
-            f= convertir.KhztoHz(f)
-        elif self.combof.get()== 'GHz':
-            f= convertir.GhztoHz(f)
-        if self.ciudad.get()== 0:
-            print("Ciudad Grande")
-        elif self.ciudad.get()== 1:
-            print("Ciudad Pequeña")
+        ud= self.comboD.get()
+        uf= self.combof.get()
+        d,f= self.convertirUnidades(d,f,uf,ud)
+        
+        hte= float(self.hte.get())
+        hre= float(self.hre.get())
 
+        modelo= Okumura(f,d,hte,hre)
+        self.lp= modelo.calcular(self.ciudad.get(),self.sub.get())
+        self.asignar(self.lp)
+        # except:
+        #     messagebox.showwarning( "Warning","Datos no validos")
+class Cost231(Modelos):
+    def __init__(self):
+        self.factor= BooleanVar()
+        self.sub= BooleanVar()
+        self.ciudad= IntVar()
+    def ventana(self):
+        
+        ventana = Toplevel()
+        ventana.geometry("350x350")
+        ventana.resizable(0,0)
+        ventana.iconbitmap("./assets/antena.ico")
+        ventana.title("Cost-231")
+        Label(ventana,text="Distancia ").grid(row=0,column=0)
+        self.distancia= Entry(ventana,width=17,borderwidth=3)
+        self.distancia.grid(row=0,column=1,pady=5)
+        self.comboD= ttk.Combobox(ventana, values=["m","Km","Milles"],width=7)
+        self.comboD.grid(row=0,column=2,padx=5,pady=5,sticky=W)
+        Label(ventana,text="frecuencia ").grid(row=1,column=0)
+        self.frecuencia= Entry(ventana,width=17,borderwidth=3)
+        self.frecuencia.grid(row=1,column=1,pady=5)
+        self.combof= ttk.Combobox(ventana, values=["KHz","MHz","GHz"],width=7)
+        self.combof.grid(row=1,column=2,padx=5,pady=5,sticky=W)
+        Label(ventana,text="Altura efectiva antena Tx").grid(row=2,column=0)
+        self.hte= Entry(ventana,width=17,borderwidth=3)
+        self.hte.grid(row=2,column=1,pady=5)
+        Label(ventana,text='m').grid(row=2, column=2,sticky=W)
+        Label(ventana,text="Altura efectiva antena Rx").grid(row=3,column=0)
+        self.hre= Entry(ventana,width=17,borderwidth=3)
+        self.hre.grid(row=3,column=1,pady=5)
+        Label(ventana,text='m').grid(row=3, column=2,sticky=W)
+        grande= Radiobutton(ventana,text="Ciudad Grande",variable=self.ciudad,value=0)
+        grande.grid(row=4,column=1,sticky=W)
+        pequena= Radiobutton(ventana,text="Ciudad pequeña",variable=self.ciudad,value=1)
+        pequena.grid(row=5,column=1,sticky=W)
+        # check= Checkbutton(ventana,text="Zona Suburbana",var=self.sub,onvalue=True, offvalue=False)
+        # check.grid(row=6,column=1,pady=10)
+        self.combofactor= ttk.Combobox(ventana,values=["Ciudad densa","Ciudad","Barrios campestres","Rural"],width=15)
+        self.combofactor.grid(row=6,column=1,pady=10)
+        # self.combofactor.configure(state=DISABLED)
+        # chackFac= Checkbutton(ventana,text='Aplicar factor de corrección', var=self.factor,onvalue=True, offvalue=False,command=lambda: self.activar())
+        # chackFac.grid(row=7,column=1,columnspan=2,sticky=W)
+        Label(ventana,text="Factor de corrección").grid(row=6,column=0)
+        Button(ventana,text="Lp",background='#336DBA',width=15,fg='white',
+                    command=lambda: self.calcular()).grid(row=7,column=0,padx=15)
+        Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
+                command=lambda: self.enviar(self.lp,float(self.frecuencia.get()),float(self.distancia.get()),self.combof.get(),self.comboD.get())).grid(row=8,column=1,pady=15)
+        Label(ventana,text="dB").grid(row=7, column=2,sticky=W)
+        self.result= Entry(ventana,borderwidth=3,width=17)
+        self.result.grid(row=7, column=1,pady=5)
 
+    def activar(self):
+        if self.factor:
+            self.combofactor.configure(state=NORMAL)
+        else:
+            self.combofactor.configure(state=DISABLED)
+    def calcular(self):
+        d= float(self.distancia.get())
+        f= float(self.frecuencia.get())
+        ud= self.comboD.get()
+        uf= self.combof.get()
+        d,f= self.convertirUnidades(d,f,uf,ud)
+        c= self.combofactor.get()
+        
         hte= float(self.hte.get())
         hre= float(self.hre.get())
         
-        modelo= Okumura(f,d,hte,hre)
-        lp= modelo.calcular(self.ciudad.get(),self.sub.get())
-        print(self.ciudad.get(), self.sub.get())
-        
-        self.resultado.configure(state=NORMAL)
-        self.resultado.delete(0, END)
-        self.resultado.insert(0,"{:.3f}".format(lp))
-        self.resultado.configure(state=DISABLED)
+
+        modelo= Cost(f,d,hte,hre)
+        self.lp= modelo.calcular(c,self.ciudad.get())
+        self.asignar(self.lp)
+
+
+
         # except:
         #     messagebox.showwarning( "Warning","Datos no validos")
-class Cost231:
+        
     
+class PathLoss(Modelos):
     def ventana(self):
-        self.ciudad=False
-        ventana = Tk()
-        ventana.geometry("350x350")
-        ventana.resizable(0,0)
-        # ventana.config(bg='#d7f3bc')
-        ventana.iconbitmap("./assets/antena.ico")
-        ventana.title("Cost-231")
-        self.radioValor=IntVar()
-        Label(ventana,text="Distancia ").grid(row=0,column=0)
-        self.entCo= Entry(ventana,width=17,borderwidth=3)
-        self.entCo.grid(row=0,column=1,pady=5)
-        self.combo= ttk.Combobox(ventana, values=["m","Km","Milles"],width=7)
-        self.combo.grid(row=0,column=2,padx=5,pady=5,sticky=W)
-        Label(ventana,text="frecuencia ").grid(row=1,column=0)
-        self.entCo1= Entry(ventana,width=17,borderwidth=3)
-        self.entCo1.grid(row=1,column=1,pady=5)
-        self.combo1= ttk.Combobox(ventana, values=["KHz","MHz","GHz"],width=7)
-        self.combo1.grid(row=1,column=2,padx=5,pady=5,sticky=W)
-        Label(ventana,text="Altura efectiva antena Tx").grid(row=2,column=0)
-        self.entPe= Entry(ventana,width=17,borderwidth=3)
-        self.entPe.grid(row=2,column=1,pady=5)
-        Label(ventana,text='m').grid(row=2, column=2,sticky=W)
-        Label(ventana,text="Altura efectiva antena Rx").grid(row=3,column=0)
-        self.entPe1= Entry(ventana,width=17,borderwidth=3)
-        self.entPe1.grid(row=3,column=1,pady=5)
-        Label(ventana,text='m').grid(row=3, column=2,sticky=W)
-        radioPe= Radiobutton(ventana,text="Ciudad Grande",variable=self.radioValor,value=0)
-        radioPe.grid(row=4,column=1,sticky=W)
-        radioPe1= Radiobutton(ventana,text="Ciudad pequeña",variable=self.radioValor,value=1)
-        radioPe1.grid(row=5,column=1,sticky=W)
-        Label(ventana,textvariable=self.radioValor).grid(row=5,column=2)
-        self.checkValue= BooleanVar()
-        self.checkValue.set(True)
-        check= Checkbutton(ventana,text="Zona Suburbana",var=self.checkValue)
-        check.grid(row=6,column=1,pady=10)
-        Label(ventana,text="Factor de corrección").grid(row=7,column=0)
-        factor= ttk.Combobox(ventana,values=["Ciudad densa","Ciudad","Barrios campestres","Rural"],width=15)
-        factor.grid(row=7,column=1,pady=10)
-        Button(ventana,text="Lp",background='#336DBA',width=15,fg='white',
-                    command=lambda: self.calcular()).grid(row=8,column=0,padx=15)
-        Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
-                command=lambda: self.calcular()).grid(row=9,column=1,pady=15)
-        Label(ventana,text="dB").grid(row=8, column=2,sticky=W)
-        self.result= Entry(ventana,borderwidth=3,width=17)
-        self.result.grid(row=8, column=1,pady=5)
-    
-    def calcular(self):
-            # try: 
-        if self.combo.get()=='m':
-            d= float(self.entCo.get())
-            d= convertir.meToKm(d)
-        elif self.combo.get()=='Milles':
-            d= float(self.entCo.get())
-            d= convertir.millasToKm(d)
-        else:
-            d= float(self.entCo.get())
-        if self.entCo1.get()== 'MHz':
-            f= float(self.entCo1.get())
-            f= convertir.MhztoHz(f)
-        elif self.entCo1.get()== 'KHz':
-            f= float(self.entCo1.get())
-            f= convertir.KhztoHz(f)
-        elif self.entCo1.get()== 'GHz':
-            f= float(self.entCo1.get())
-            f= convertir.GhztoHz()
-        else:
-            f= float(self.entCo1.get())
-            #messagebox.showwarning("Alerta", "Datos no validos")
-        
-
-
-        hte= float(self.entPe.get())
-        hre= float(self.entPe1.get())
-        
-        modelo= Okumura(f,d,hte,hre)
-        lp= modelo.calcular(self.radioValor.get(),self.checkValue.get())
-        print(self.radioValor.get(), self.checkValue.get())
-        
-        self.result.configure(state=NORMAL)
-        self.result.delete(0, END)
-        self.result.insert(0,"{:.3f}".format(lp))
-        self.result.configure(state=DISABLED)
-        # except:
-        #     messagebox.showwarning( "Warning","Datos no validos")   
-        
-    
-class PathLoss:
-    def ventana(self):
-        ventana = Tk()
+        ventana = Toplevel()
         ventana.geometry("350x200")
         ventana.resizable(0,0)
         # ventana.config(bg='#d7f3bc')
@@ -391,7 +417,7 @@ class PathLoss:
         Button(ventana,text="Lfs",background='#336DBA',width=15,fg='white',
             command=lambda: self.calcular()).grid(row=3,column=0,padx=15)
         Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
-            command=lambda: self.enviar()).grid(row=5,column=1,columnspan=2,pady=30)
+            command=lambda: self.enviar(self.lfs,float(self.distancia.get()),float(self.frecuencia.get()),self.combof.get(),self.comboD.get())).grid(row=5,column=1,columnspan=2,pady=30)
         Label(ventana,text="dB").grid(row=3, column=3,sticky=W)
         self.result= Entry(ventana,borderwidth=3,width=17)
         self.result.grid(row=3, column=1,columnspan=2,pady=5,padx=5)
@@ -414,38 +440,38 @@ class PathLoss:
         else:
             f= float(self.frecuencia.get())
         modelo= Path(d,f)
-        lfs= modelo.calcular()
+        self.lfs= modelo.calcular()
         self.result.configure(state=NORMAL)
         self.result.delete(0, END)
-        self.result.insert(0,"{:.3f}".format(lfs))
+        self.result.insert(0,"{:.3f}".format(self.lfs))
         self.result.configure(state=DISABLED)
         
-    def enviar(self):
-            lfs= float(self.result.get())
-            d= float(self.distancia.get())
-            f= float(self.frecuencia.get())
-            uf= self.combof.get()
-            ud= self.comboD.get()
-            perdidas.configure(state=NORMAL)
-            perdidas.delete(0, END)
-            perdidas.insert(0,"{:.3f}".format(lfs))
-            perdidas.configure(state=DISABLED)
-            distancia.configure(state=NORMAL)
-            distancia.delete(0, END)
-            distancia.insert(0,"{:.3f}".format(d))
-            distancia.configure(state=DISABLED)
-            frecuencia.configure(state=NORMAL)
-            frecuencia.delete(0, END)
-            frecuencia.insert(0,"{:.3f}".format(f))
-            frecuencia.configure(state=DISABLED)
-            combof.configure(state=NORMAL)
-            combof.delete(0, END)
-            combof.insert(0,uf)
-            combof.configure(state=DISABLED)
-            combod.configure(state=NORMAL)
-            combod.delete(0, END)
-            combod.insert(0,ud)
-            combod.configure(state=DISABLED)
+    # def enviar(self):
+    #         lfs= float(self.result.get())
+    #         d= float(self.distancia.get())
+    #         f= float(self.frecuencia.get())
+    #         uf= self.combof.get()
+    #         ud= self.comboD.get()
+    #         perdidas.configure(state=NORMAL)
+    #         perdidas.delete(0, END)
+    #         perdidas.insert(0,"{:.3f}".format(lfs))
+    #         perdidas.configure(state=DISABLED)
+    #         distancia.configure(state=NORMAL)
+    #         distancia.delete(0, END)
+    #         distancia.insert(0,"{:.3f}".format(d))
+    #         distancia.configure(state=DISABLED)
+    #         frecuencia.configure(state=NORMAL)
+    #         frecuencia.delete(0, END)
+    #         frecuencia.insert(0,"{:.3f}".format(f))
+    #         frecuencia.configure(state=DISABLED)
+    #         combof.configure(state=NORMAL)
+    #         combof.delete(0, END)
+    #         combof.insert(0,uf)
+    #         combof.configure(state=DISABLED)
+    #         combod.configure(state=NORMAL)
+    #         combod.delete(0, END)
+    #         combod.insert(0,ud)
+    #         combod.configure(state=DISABLED)
         
 
 

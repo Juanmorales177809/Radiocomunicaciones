@@ -18,8 +18,6 @@ class Okumura():
         self.distancia= distancia
         self.hte= hte
         self.hre= hre
-        
-        
     
     def calcularA(self,ciudad):
         if ciudad ==0:
@@ -38,23 +36,24 @@ class Okumura():
         else:
             return lp
         
-
 class Cost(Okumura):
 
     def __init__(self,frecuencia,distancia,hte=1,hre=1,ciudadGrande=True,subUrbano=True):
-        ModeloPerdidas.__init__(ModeloPerdidas, frecuencia, distancia)#Importar contructor de clase madre
-        Okumura.__init__(Okumura,frecuencia,distancia ,hte=1,hre=1,ciudadGrande=True,subUrbano=True)#Importar constructor clase hija
-    def calcular(self,c):
+        self.frecuencia= frecuencia
+        self.distancia= distancia
+        self.hte= hte
+        self.hre= hre
+    def calcular(self,c,ciudad):
         correction = {"Ciudad densa": 0, "Ciudad":-5,"Barrios campestres": -10, "Rural":-17}
         lp= 46.3+33.9*log10(self.frecuencia)-13.82*log10(self.hte)
-        -self.calcularA()*self.hre+(44.9-6.55*log10(self.hte))*log10(self.distancia)+correction[c]
+        -self.calcularA(ciudad)*self.hre+(44.9-6.55*log10(self.hte))*log10(self.distancia)+correction[c]
         return lp
 
-# if __name__ == "__main__":
-#     modelo= Cost(2.4,10)
-#     print(modelo.calcular("Ciudad densa"))
-#     model1 = Okumura(2.4,10,4,4,False,True)
-#     print(model1.calcularLb())
+if __name__ == "__main__":
+    modelo= Okumura(2.4*10**9,24000,4,4)
+    print(modelo.calcular(0,True))
+    # model1 = Okumura(2.4*10**9,10,4,4)
+    # print(model1.calcularLb())
     
     
 
