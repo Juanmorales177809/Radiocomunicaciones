@@ -1,13 +1,17 @@
-
 from pickle import READONLY_BUFFER
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 from tkinter import messagebox
-
 from matplotlib.pyplot import text
-from modelos import ModeloPerdidas,Path,Okumura,Cost
+from modelos import Path,Okumura,Cost
 import convertir
+import sys
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QAction, QTableWidget,QTableWidgetItem,QVBoxLayout
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSlot
+import unidades
+
 
 
 
@@ -29,51 +33,23 @@ frame1.pack(fill='both',expand=True)
 frame2.pack(fill='both',expand=True)
 frame3 = Frame(note,width=500,height=500)
 frame3.pack(fill='both',expand=True)
-# frame= Frame(note,width=500,height=500)
-# frame.pack(fill='both',expand=True) 
-# frame4= Frame(note,width=500,height=500)
-# frame4.pack(fill='both',expand=True) 
-# frame5= Frame(note,width=500,height=500)
-# frame5.pack(fill='both',expand=True) 
+frame4= Frame(frame3,borderwidth=5,border=10)
+frame4.grid(row=0,column=0,columnspan=3,pady=30,padx=15)
+frame4.config(relief='groove')
+
 imageForum= tk.PhotoImage(file="./assets/ante4.png")
 imageForum1= tk.PhotoImage(file="./assets/convertir.png")
 imageForum2= tk.PhotoImage(file="./assets/maps.png")
 imageForum3= tk.PhotoImage(file="./assets/Guardar.png")
 okupe= tk.PhotoImage(file="./assets/okupeque.png")
 costpe= tk.PhotoImage(file="./assets/costpeque.png")
+imageForum4= tk.PhotoImage(file="./assets/polar.png")
 
-#note.add(frame2,text='Radioenlace',image=imageForum,compound=tk.RIGHT,padding=20)
+
 note.add(frame1,image=imageForum,state=NORMAL)
-# note.add(frame,image=imageForum,state=NORMAL)
-# note.add(frame4,image=imageForum,state=NORMAL)
-# note.add(frame5,image=imageForum,state=NORMAL)
-note.add(frame3,image=imageForum2)
-note.add(frame2,image=imageForum1)
-menubar= Menu(v)
-v.config(menu=menubar)
-file= Menu(menubar)
-# menubar.add_cascade(label="Archivo", menu=file)
-# helpmenu = Menu(menubar)
-# menubar.add_cascade(label="Ayuda", menu=helpmenu)
-# Menu(menubar, tearoff=0)
-# helpmenu = Menu(menubar, tearoff=0)
-# filemenu.add_command(label="Nuevo")
-# filemenu.add_command(label="Abrir")
-# filemenu.add_command(label="Guardar")
-# filemenu.add_command(label="Cerrar")
-# filemenu.add_separator()
-# filemenu.add_command(label="Salir", command=v.quit)
 
-
-
-
-#Modelo de perdidas
-#Label(frame1, text="Modelo de Perdidas", font=(16),background='#B0F9FE')
-# Label(frame1,text= "Elija el modelo de perdidas",bg="#d7f3bc", font=(14)).place(x=150, y=150)
-# modelo= ttk.Combobox(frame1,width=30,values=["Path Loss", "Okumura-Hata", "Cost 231","Longley-Rice"])
-# modelo.place(x=150, y=200)
-# Button(frame1,text="ACEPTAR",background='#2A4014',width=20,fg='white',
-#         command=lambda: buton()).place(x=175,y=250)
+note.add(frame2,image=imageForum4)
+note.add(frame3,image=imageForum1)
 
 patloss= PhotoImage(file="./assets/pathsolo.png")
 botonPath = Button(frame1 ,image=patloss, width=500, height=100,compound=tk.LEFT,command=lambda: path())
@@ -95,10 +71,7 @@ google= PhotoImage(file="./assets/mapitas.png")
 botonPath5 = Button(frame1 ,image=google, width=500, height=100,compound=tk.LEFT,command=lambda: lon())
 botonPath5.pack()
 
-def lon():
-    messagebox.showinfo("Mantenimiento", "Esta sección está en construcción")
-def limpiar():
-    frame1.destroy()
+
     
 
 
@@ -182,7 +155,7 @@ Label(frame2, text="dBm",font=(10)).grid(row=12,column=2,sticky=W)
 
 #Modelo de perdidas
      
-#Button(frame2,image= imageForum3, command=lambda: ventana.destroy()).grid(row=18,column=0)
+
 radioValue= IntVar()
 Label(frame2, text="Modelo de perdidas ",font=(10)).grid(row=13,column=0,sticky=E)
 radio1= Radiobutton(frame2,text="Path Loss", variable=radioValue,value=0,command=lambda: path())
@@ -196,17 +169,17 @@ radio4.grid(row=16,column=1,sticky=W)
 
 
 #Perdidas por espacio libre
-if radioValue.get==0:
-    perdida= "Lfs"
-else:
-    perdida= "Lp"
+
+mapas= PhotoImage(file="./assets/maps.png")
 Label(frame2, text="Lp :",font=(10)).grid(row=17,column=0,sticky=E)
 perdidas = Entry(frame2,width=10,borderwidth=3,state=DISABLED)
 perdidas.grid(row=17,column=1,pady=5)
 Label(frame2, text="dB",font=(10)).grid(row=17,column=2,sticky=W)
-Button(frame2,text=perdida,background='#336DBA',width=30,fg='white',command=lambda: resultados()).grid(row=17,column=0)
-def resultados():
-    print(radioValue)
+Button(frame2,text="Calcular",background='#336DBA',width=15,fg='white',command=lambda: resultados()).grid(row=17,column=0)
+Button(frame2,image=mapas,background='white',fg='white',command=lambda: resultados()).grid(row=18,column=3,pady=20,sticky=E)
+
+
+    
 
 class Modelos:
     
@@ -232,21 +205,23 @@ class Modelos:
             combod.insert(0,ud)
             combod.configure(state=DISABLED)
     def convertirUnidades(self,d,f,uf,ud):
-        # try:
+        try:
         
-        if ud=='Milles':
-            d= convertir.millasToKm(d)
-            d= convertir.kmToM(d)
-        elif ud=="Km":
-            d= convertir.kmToM(d)
-        if uf== 'MHz':
-            f= convertir.MhztoHz(f)
-        elif uf== 'KHz':
-            f= convertir.KhztoHz(f)
-        elif uf== 'GHz':
-            f= convertir.GhztoHz(f)
-        
-        return d,f
+            if ud=='Milles':
+                d= convertir.millasToKm(d)
+                d= convertir.kmToM(d)
+            elif ud=="Km":
+                d= convertir.kmToM(d)
+            if uf== 'MHz':
+                f= convertir.MhztoHz(f)
+            elif uf== 'KHz':
+                f= convertir.KhztoHz(f)
+            elif uf== 'GHz':
+                f= convertir.GhztoHz(f)
+            
+            return d,f
+        except:
+            messagebox.showwarning( "Warning","Datos no validos")    
     def asignar(self,lp):
         self.resultado.configure(state=NORMAL)
         self.resultado.delete(0, END)
@@ -304,20 +279,22 @@ class SelecOkamura(Modelos):
         
     
     def calcular(self):
-        d= float(self.distancia.get()) 
-        f= float(self.frecuencia.get())
-        ud= self.comboD.get()
-        uf= self.combof.get()
-        d,f= self.convertirUnidades(d,f,uf,ud)
-        
-        hte= float(self.hte.get())
-        hre= float(self.hre.get())
+        try:
+            d= float(self.distancia.get()) 
+            f= float(self.frecuencia.get())
+            ud= self.comboD.get()
+            uf= self.combof.get()
+            d,f= self.convertirUnidades(d,f,uf,ud)
+            
+            hte= float(self.hte.get())
+            hre= float(self.hre.get())
 
-        modelo= Okumura(f,d,hte,hre)
-        self.lp= modelo.calcular(self.ciudad.get(),self.sub.get())
-        self.asignar(self.lp)
-        # except:
-        #     messagebox.showwarning( "Warning","Datos no validos")
+            modelo= Okumura(f,d,hte,hre)
+            self.lp= modelo.calcular(self.ciudad.get(),self.sub.get())
+            self.asignar(self.lp)
+        except:
+            messagebox.showwarning( "Warning","Datos no validos")
+
 class Cost231(Modelos):
     def __init__(self):
         self.factor= BooleanVar()
@@ -365,8 +342,8 @@ class Cost231(Modelos):
         Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
                 command=lambda: self.enviar(self.lp,float(self.frecuencia.get()),float(self.distancia.get()),self.combof.get(),self.comboD.get())).grid(row=8,column=1,pady=15)
         Label(ventana,text="dB").grid(row=7, column=2,sticky=W)
-        self.result= Entry(ventana,borderwidth=3,width=17)
-        self.result.grid(row=7, column=1,pady=5)
+        self.resultado= Entry(ventana,borderwidth=3,width=17)
+        self.resultado.grid(row=7, column=1,pady=5)
 
     def activar(self):
         if self.factor:
@@ -374,25 +351,22 @@ class Cost231(Modelos):
         else:
             self.combofactor.configure(state=DISABLED)
     def calcular(self):
-        d= float(self.distancia.get())
-        f= float(self.frecuencia.get())
-        ud= self.comboD.get()
-        uf= self.combof.get()
-        d,f= self.convertirUnidades(d,f,uf,ud)
-        c= self.combofactor.get()
-        
-        hte= float(self.hte.get())
-        hre= float(self.hre.get())
-        
-
-        modelo= Cost(f,d,hte,hre)
-        self.lp= modelo.calcular(c,self.ciudad.get())
-        self.asignar(self.lp)
-
-
-
-        # except:
-        #     messagebox.showwarning( "Warning","Datos no validos")
+        try:
+            d= float(self.distancia.get())
+            f= float(self.frecuencia.get())
+            ud= self.comboD.get()
+            uf= self.combof.get()
+            d,f= self.convertirUnidades(d,f,uf,ud)
+            c= self.combofactor.get()
+            hte= float(self.hte.get())
+            hre= float(self.hre.get())
+            modelo= Cost(f,d,hte,hre)
+            self.lp= modelo.calcular(c,self.ciudad.get())
+            print(self.lp)
+            self.asignar(self.lp)
+            
+        except:
+            messagebox.showwarning( "Warning","Datos no validos")
         
     
 class PathLoss(Modelos):
@@ -445,35 +419,59 @@ class PathLoss(Modelos):
         self.result.delete(0, END)
         self.result.insert(0,"{:.3f}".format(self.lfs))
         self.result.configure(state=DISABLED)
-        
-    # def enviar(self):
-    #         lfs= float(self.result.get())
-    #         d= float(self.distancia.get())
-    #         f= float(self.frecuencia.get())
-    #         uf= self.combof.get()
-    #         ud= self.comboD.get()
-    #         perdidas.configure(state=NORMAL)
-    #         perdidas.delete(0, END)
-    #         perdidas.insert(0,"{:.3f}".format(lfs))
-    #         perdidas.configure(state=DISABLED)
-    #         distancia.configure(state=NORMAL)
-    #         distancia.delete(0, END)
-    #         distancia.insert(0,"{:.3f}".format(d))
-    #         distancia.configure(state=DISABLED)
-    #         frecuencia.configure(state=NORMAL)
-    #         frecuencia.delete(0, END)
-    #         frecuencia.insert(0,"{:.3f}".format(f))
-    #         frecuencia.configure(state=DISABLED)
-    #         combof.configure(state=NORMAL)
-    #         combof.delete(0, END)
-    #         combof.insert(0,uf)
-    #         combof.configure(state=DISABLED)
-    #         combod.configure(state=NORMAL)
-    #         combod.delete(0, END)
-    #         combod.insert(0,ud)
-    #         combod.configure(state=DISABLED)
-        
 
+class Conversor:
+    
+    def ventana(self):
+        Label(frame4,text="Ingrese valor", font=(11)).grid(row=1,column=0, padx=15,pady=5)
+        self.unidadesD= ttk.Combobox(frame4,values=["dB","dBm","W","mW","dBd","dBi","metros","Kilometros"],width=7,foreground='grey')
+        self.unidadesD.grid(row=1, column=2,padx=5,pady=5)
+        Label(frame4,text="=").grid(row=1,column=4)
+        self.unidadesA= ttk.Combobox(frame4,values=["dB","dBm","W","mW","dBd","dBi","metros","Kilometros"],width=7,foreground='grey')
+        self.unidadesA.grid(row=1, column=5,padx=5, pady=5,sticky=W)
+        self.entrada = Entry(frame4,width=20,borderwidth=2)
+        self.entrada.grid(row=1,column=1)
+        self.unidad = Entry(frame4,width=10,borderwidth=2)#Caja de texto con el valor convertido
+        self.unidad.grid(row=3,column=2,padx=5, pady=5)
+        self.numeros =Entry(frame4,borderwidth=2,width=20)#Caja de texto con las unidades convertidas
+        self.numeros.grid(row=3,column=1,padx=5, pady=5)
+        Button(frame4,text="Convertir", background="#336DBA",fg='white',command=lambda: self.calcular()).grid(row=3,column=0,pady=5)
+    
+    def calcular(self):
+        self.num, self.uni = unidades.agregar(float(self.entrada.get()),self.unidadesD.get(),self.unidadesA.get())
+        self.asignar()
+    def asignar(self):
+        self.numeros.configure(state=NORMAL)
+        self.numeros.delete(0, END)
+        self.numeros.insert(0,"{:.1f}".format(self.num))
+        self.numeros.configure(state=DISABLED)
+        self.unidad.configure(state=NORMAL)
+        self.unidad.delete(0, END)
+        self.unidad.insert(0,self.uni)
+        self.unidad.configure(state=DISABLED)
+
+
+class Resultados:
+    def __init__(self):
+        pass
+    def ventana(self):
+        ventana = Toplevel()
+        ventana.geometry("400x350")
+        ventana.resizable(0,0)
+        ventana.iconbitmap("./assets/antena.ico")
+        ventana.title("Presupuesto de potencia")
+
+
+        Button(frame2,image=guardar,background='white',fg='white',command=lambda: resultados()).grid(row=18,column=3,pady=20,sticky=W)
+
+def lon():
+    messagebox.showinfo("Mantenimiento", "Esta sección está en construcción")
+def limpiar():
+    frame1.destroy()
+
+def resultados():
+    resultados= Resultados()
+    resultados.ventana()
 
 def path():
     loss= PathLoss()
@@ -485,22 +483,9 @@ def oku():
 def cos():
     cost= Cost231()
     cost.ventana()
-def results():
-    presupuesto= PathLoss(
-        entD.get(),entF.get(),
-        comboFr.get(),comboFC.get(),entR.get(),entGtx.get(),
-        entGrx.get(),entLf.get(),entLb.get(),entSe.get(),
-        entBw.get(),entCN.get())
 
-def calcular():
-    pass
-# def resultados():
-#     result = Result()
-#     result.resultados()
-# #Calcular
-
-
-
-
+if __name__ == "__main__":
+    conversor= Conversor()
+    conversor.ventana()
 
 v.mainloop()

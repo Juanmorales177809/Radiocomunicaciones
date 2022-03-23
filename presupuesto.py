@@ -1,30 +1,20 @@
 
-import numpy as np
+from math import log10, sqrt
 import calculos
 
 class Presupuesto:
-    def __init__(self):
+    def __init__(self,frecuencia):
         self.k=1.380*10**-23
         self.tk=290
-        self.f= 0
+        self.f= frecuencia
         
-    #Perdidas en trayectoria por espacio libre (adimensional)
-    def lfsW(self,f,D):
-        return ((4*np.pi*D)/self.wavLegh)**2
-    #Perdidas en trayectoria por espacio libre (Frecuencia en Ghz y distancia en Km)
-    def lfs(self,f,D):
-        return 92.4 +20*np.log10(f)+20*np.log10(D)
-    #Perdidas en trayectoria por espacio libre (Frecuencia en Mhz y distancia en Km)
-    def perdidasEspacioLibre(self):
-        return 32.4+20*np.log10(self.f)+20*np.log10(self.D)
-    
     def factorRugo(self,val):
         if val == "Agua o terreno liso":
             self.A = 4.0
         elif val == "Sembrados densos, arenales":
             self.A= 3.0
         elif val == "Bosques":
-            self.A = 2.0 
+            self.A = 2.0
         elif val == "Terreno normal":
             self.A = 1.0
         elif val == "Aspero y montanoso":
@@ -46,11 +36,11 @@ class Presupuesto:
     def desvanecimiento(self,val,prob):
         self.factorRugo(val)
         self.factorProba(prob)
-        return 30*np.log10(self.D)+10*np.log10(6*self.A*self.B*self.f)-10*np.log10(1-self.R)-70
+        return 30*log10(self.D)+10*log10(6*self.A*self.B*self.f)-10*log10(1-self.R)-70
     #>Ecuación de Friss, solo recibe valores en decibeles
     #Potencia de ruido
     def potenciaRuido(self,B):
-        return '{:.2f}'.format( 10*np.log10(self.k*self.tk*B))
+        return '{:.2f}'.format( 10*log10(self.k*self.tk*B))
     #Calculo del Friis
     def friis(self):
         return self.Ptx+self.Gitx+self.Girx-self.lfs
@@ -80,20 +70,13 @@ class Presupuesto:
         
     #Altura de la antena
     def rn(self,d1,d2,f):
-        return '{:.2f}'.format(np.sqrt((calculos.wavLegh(f)*d1*d2)/(d1+d2)))
+        return '{:.2f}'.format(sqrt((calculos.wavLegh(f)*d1*d2)/(d1+d2)))
     #Zona uno de fresnel 
     def zonaUno(self,f,D):
-        return 17.32*np.sqrt(D/(4*f))
+        return 17.32*sqrt(D/(4*f))
     #Horizonte de radio
 
-class Okumura(Presupuesto):
-    
-    def hata(self,media,peq,sub,f):
-        pass
-    def select(self):
-        pass
-class Cost(Presupuesto):
-    pass
+
 if __name__ == "__main__":
     #lost = Presupuesto(1.8,40)
     #d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")
