@@ -4,6 +4,7 @@ from tkinter import ttk
 import tkinter as tk
 from tkinter import messagebox
 from matplotlib.pyplot import text
+from pyparsing import col
 from modelos import Path,Okumura,Cost
 import convertir
 import sys
@@ -40,10 +41,13 @@ frame4.config(relief='groove')
 imageForum= tk.PhotoImage(file="./assets/ante4.png")
 imageForum1= tk.PhotoImage(file="./assets/convertir.png")
 imageForum2= tk.PhotoImage(file="./assets/maps.png")
-imageForum3= tk.PhotoImage(file="./assets/Guardar.png")
+guardar= tk.PhotoImage(file="./assets/Guardar.png")
 okupe= tk.PhotoImage(file="./assets/okupeque.png")
 costpe= tk.PhotoImage(file="./assets/costpeque.png")
 imageForum4= tk.PhotoImage(file="./assets/polar.png")
+mapas= PhotoImage(file="./assets/maps.png")
+abrir= PhotoImage(file="./assets/abrir.png")
+#presupuesto= PhotoImage(file="./assets/cost231.jpg")
 
 
 note.add(frame1,image=imageForum,state=NORMAL)
@@ -170,13 +174,13 @@ radio4.grid(row=16,column=1,sticky=W)
 
 #Perdidas por espacio libre
 
-mapas= PhotoImage(file="./assets/maps.png")
+
 Label(frame2, text="Lp :",font=(10)).grid(row=17,column=0,sticky=E)
 perdidas = Entry(frame2,width=10,borderwidth=3,state=DISABLED)
 perdidas.grid(row=17,column=1,pady=5)
 Label(frame2, text="dB",font=(10)).grid(row=17,column=2,sticky=W)
 Button(frame2,text="Calcular",background='#336DBA',width=15,fg='white',command=lambda: resultados()).grid(row=17,column=0)
-Button(frame2,image=mapas,background='white',fg='white',command=lambda: resultados()).grid(row=18,column=3,pady=20,sticky=E)
+Button(frame2,image=mapas,background='white',fg='white',command=lambda: lon()).grid(row=18,column=3,pady=20,sticky=E)
 
 
     
@@ -451,18 +455,69 @@ class Conversor:
         self.unidad.configure(state=DISABLED)
 
 
-class Resultados:
-    def __init__(self):
-        pass
+class Resultado:
+    def __init__(self,pire,friis,fc,ptx,gs,):
+        self.pire = pire
+        self.friis= friis
+        self.fc = fc
+        self.ptx = ptx
+        self.gs = gs
+
     def ventana(self):
         ventana = Toplevel()
         ventana.geometry("400x350")
         ventana.resizable(0,0)
         ventana.iconbitmap("./assets/antena.ico")
         ventana.title("Presupuesto de potencia")
-
-
-        Button(frame2,image=guardar,background='white',fg='white',command=lambda: resultados()).grid(row=18,column=3,pady=20,sticky=W)
+        frames= Frame(ventana)
+        frames.pack(anchor=CENTER,expand=True, fill=tk.X)
+        frames.config(relief='groove')
+        #Label(ventana,image=imageForum3).grid(row=4,column=1, columnspan=3)
+        Label(frames,text="PIRE:").grid(row=1,column=0,pady=5,ipadx=10)
+        self.pireE= Entry(frames,width=10)
+        self.pireE.grid(row=1,column=1,pady=5)
+        Label(frames,text="dB").grid(row=1,column=2)
+        Label(frames,text="Friis:").grid(row=2,column=0,pady=5)
+        self.friisE= Entry(frames,width=10)
+        self.friisE.grid(row=2,column=1,pady=5)
+        Label(frames,text="   dB   ").grid(row=2,column=2)
+        Label(frames,text="Fc:").grid(row=3,column=0, pady=5)
+        self.fcE= Entry(frames, width=10)
+        self.fcE.grid(row=3,column=1,pady=5)
+        Label(frames,text="   dB   ").grid(row=3,column=2)
+        Label(frames,text="Ptx:").grid(row=4,column=0,pady=5)
+        self.ptxE= Entry(frames,width=10)
+        self.ptxE.grid(row=4,column=1,pady=5)
+        Label(frames,text="   dBm   ").grid(row=4,column=2)
+        Label(frames,text="             Ganancia del sitema:            ").grid(row=5,column=0,pady=5)
+        self.gsE= Entry(frames,width=10)
+        self.gsE.grid(row=5,column=1)
+        Label(frames,text="   dB   ").grid(row=5,column=2)
+        # Button(frames,image=abrir,background='white',fg='white',command=lambda: resultados()).grid(row=7,column=1, pady= 000)
+        # Button(frames,image=guardar,background='white',fg='white',command=lambda: resultados()).grid(row=7,column=0,sticky=E,padx=2)
+    
+    
+        self.pireE.configure(state=NORMAL)
+        self.pireE.delete(0, END)
+        self.pireE.insert(0,"{:.1f}".format(self.pire))
+        self.pireE.configure(state=DISABLED)
+        self.friisE.configure(state=NORMAL)
+        self.friisE.delete(0, END)
+        self.friisE.insert(0,"{:.1f}".format(self.friis))
+        self.friisE.configure(state=DISABLED)
+        self.fcE.configure(state=NORMAL)
+        self.fcE.delete(0, END)
+        self.fcE.insert(0,"{:.1f}".format(self.fc))
+        self.fcE.configure(state=DISABLED)
+        self.ptxE.configure(state=NORMAL)
+        self.ptxE.delete(0, END)
+        self.ptxE.insert(0,"{:.1f}".format(self.ptx))
+        self.ptxE.configure(state=DISABLED)
+        self.gsE.configure(state=NORMAL)
+        self.gsE.delete(0, END)
+        self.gsE.insert(0,"{:.1f}".format(self.gs))
+        self.gsE.configure(state=DISABLED)
+        
 
 def lon():
     messagebox.showinfo("Mantenimiento", "Esta sección está en construcción")
@@ -470,7 +525,7 @@ def limpiar():
     frame1.destroy()
 
 def resultados():
-    resultados= Resultados()
+    resultados= Resultado(2.55,5.26,2.5,16.5,52)
     resultados.ventana()
 
 def path():
@@ -483,6 +538,10 @@ def oku():
 def cos():
     cost= Cost231()
     cost.ventana()
+
+
+
+
 
 if __name__ == "__main__":
     conversor= Conversor()
