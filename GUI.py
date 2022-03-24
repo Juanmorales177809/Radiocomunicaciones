@@ -1,9 +1,11 @@
+from calendar import c
 from pickle import READONLY_BUFFER
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 from tkinter import messagebox
 from matplotlib.pyplot import text
+from numpy import imag
 from pyparsing import col
 from modelos import Path,Okumura,Cost
 import convertir
@@ -107,54 +109,54 @@ comboFC.grid(row=4, column=1,padx=5,pady=5,columnspan=2)
 
 #Confiabilidad del sistema
 Label(frame2, text="Fiabilidad requerida :",font=(10)).grid(row=5,column=0,sticky=E)
-entR = Entry(frame2,width=10,borderwidth=3)
-entR.grid(row=5,column=1)
+confiabilidad = Entry(frame2,width=10,borderwidth=3)
+confiabilidad.grid(row=5,column=1)
 Label(frame2, text="%",font=(10)).grid(row=5,column=2,pady=5,sticky=W)
 
 #Ganancia antena transmisora
 Label(frame2, text="Ganancia de la antena Tx :",font=(10)).grid(row=6,column=0,sticky=E)
-entGtx = Entry(frame2,width=10,borderwidth=3)
-entGtx.grid(row=6,column=1)
-combo2= ttk.Combobox(frame2,values=["dBm","dBi"],width=7)
-combo2.grid(row=6, column=2,padx=5,pady=5,sticky=W)
+gananciatx = Entry(frame2,width=10,borderwidth=3)
+gananciatx.grid(row=6,column=1)
+combotx= ttk.Combobox(frame2,values=["dBm","dBi"],width=7)
+combotx.grid(row=6, column=2,padx=5,pady=5,sticky=W)
 
 #Ganancia antena receptora
 Label(frame2, text="Ganancia de la antena Rx :",font=(10)).grid(row=7,column=0,sticky=E)
-entGrx = Entry(frame2,width=10,borderwidth=3)
-entGrx.grid(row=7,column=1)
-combo3= ttk.Combobox(frame2,values=["dBb","dBi"],width=7)
-combo3.grid(row=7, column=2,padx=5,pady=5,sticky=W)
+gananciarx = Entry(frame2,width=10,borderwidth=3)
+gananciarx.grid(row=7,column=1)
+comborx= ttk.Combobox(frame2,values=["dBb","dBi"],width=7)
+comborx.grid(row=7, column=2,padx=5,pady=5,sticky=W)
 
 #Perdidas por cable
 Label(frame2, text="Perdidas por cable Lf :",font=(10)).grid(row=8,column=0,sticky=E)
-entLf = Entry(frame2,width=10,borderwidth=3)
-entLf.grid(row=8,column=1,pady=5)
+perdidasCable = Entry(frame2,width=10,borderwidth=3)
+perdidasCable.grid(row=8,column=1,pady=5)
 Label(frame2, text="dB",font=(10)).grid(row=8,column=2,sticky=W)
 
 #Perdidas por acople
 Label(frame2, text="Perdidas por acople Lb :",font=(10)).grid(row=9,column=0,sticky=E)
-entLb = Entry(frame2,width=10,borderwidth=3)
-entLb.grid(row=9,column=1,pady=5)
+perdidasAcople = Entry(frame2,width=10,borderwidth=3)
+perdidasAcople.grid(row=9,column=1,pady=5)
 Label(frame2, text="dB",font=(10)).grid(row=9,column=2,sticky=W)
 
 
 #Sensibilidad receptora
 Label(frame2, text="Sensibilidad Rx :",font=(10)).grid(row=10,column=0,sticky=E)
-entSe = Entry(frame2,width=10,borderwidth=3)
-entSe.grid(row=10,column=1)
+sensibilidad = Entry(frame2,width=10,borderwidth=3)
+sensibilidad.grid(row=10,column=1)
 combo4= ttk.Combobox(frame2,values=["dBm","μV"],width=7,state=READONLY_BUFFER)
 combo4.grid(row=10, column=2,padx=5,pady=5,sticky=W)
 
 #Ancho de banda
 Label(frame2, text="BW :",font=(10)).grid(row=11,column=0,sticky=E)
-entBw = Entry(frame2,width=10,borderwidth=3)
-entBw.grid(row=11,column=1,pady=5)
+bw = Entry(frame2,width=10,borderwidth=3)
+bw.grid(row=11,column=1,pady=5)
 Label(frame2, text="Mhz",font=(10)).grid(row=11,column=2,sticky=W)
 
 #Relación señal a ruido
 Label(frame2, text="C/N :",font=(10)).grid(row=12,column=0,sticky=E)
-entCN = Entry(frame2,width=10,borderwidth=3)
-entCN.grid(row=12,column=1,pady=5)
+cn = Entry(frame2,width=10,borderwidth=3)
+cn.grid(row=12,column=1,pady=5)
 Label(frame2, text="dBm",font=(10)).grid(row=12,column=2,sticky=W)
 
 #Modelo de perdidas
@@ -181,6 +183,9 @@ perdidas.grid(row=17,column=1,pady=5)
 Label(frame2, text="dB",font=(10)).grid(row=17,column=2,sticky=W)
 Button(frame2,text="Calcular",background='#336DBA',width=15,fg='white',command=lambda: resultados()).grid(row=17,column=0)
 Button(frame2,image=mapas,background='white',fg='white',command=lambda: lon()).grid(row=18,column=3,pady=20,sticky=E)
+Button(frame2,image=mapas,background='white',fg='white',command=lambda: limpiar()).grid(row=18,column=2,pady=20,sticky=E)
+#Button(frame2,image=mapas,background='white',fg='white',command=lambda: listar1()).grid(row=18,column=1,pady=20,sticky=E)
+Button(frame2,image=mapas,background='white',fg='white',command=lambda: listar()).grid(row=18,column=4,pady=20,sticky=E)
 
 
     
@@ -278,7 +283,7 @@ class SelecOkamura(Modelos):
         Label(ventana,text="dB").grid(row=7, column=2,sticky=W)
         self.resultado= Entry(ventana,borderwidth=3,width=17)
         self.resultado.grid(row=7, column=1)
-        mapas= Button(ventana,text= "Mapa" ,background='#336DBA',fg='white',width=15,command=lambda: lon())
+        mapas= Button(ventana,image=imageForum2,fg='white',command=lambda: lon())
         mapas.grid(row=9,column=0,padx=15,pady=15)
         
     
@@ -307,7 +312,7 @@ class Cost231(Modelos):
     def ventana(self):
         
         ventana = Toplevel()
-        ventana.geometry("350x350")
+        ventana.geometry("350x380")
         ventana.resizable(0,0)
         ventana.iconbitmap("./assets/antena.ico")
         ventana.title("Cost-231")
@@ -348,6 +353,8 @@ class Cost231(Modelos):
         Label(ventana,text="dB").grid(row=7, column=2,sticky=W)
         self.resultado= Entry(ventana,borderwidth=3,width=17)
         self.resultado.grid(row=7, column=1,pady=5)
+        mapas= Button(ventana,image=imageForum2,fg='white',command=lambda: lon())
+        mapas.grid(row=9,column=0,padx=15,pady=15)
 
     def activar(self):
         if self.factor:
@@ -376,7 +383,7 @@ class Cost231(Modelos):
 class PathLoss(Modelos):
     def ventana(self):
         ventana = Toplevel()
-        ventana.geometry("350x200")
+        ventana.geometry("350x250")
         ventana.resizable(0,0)
         # ventana.config(bg='#d7f3bc')
         ventana.iconbitmap("./assets/antena.ico")
@@ -399,6 +406,8 @@ class PathLoss(Modelos):
         Label(ventana,text="dB").grid(row=3, column=3,sticky=W)
         self.result= Entry(ventana,borderwidth=3,width=17)
         self.result.grid(row=3, column=1,columnspan=2,pady=5,padx=5)
+        mapas= Button(ventana,image=imageForum2,fg='white',command=lambda: lon())
+        mapas.grid(row=6,column=0,padx=15,pady=15)
     
     def calcular(self):
         if self.comboD.get()=='m':
@@ -522,7 +531,42 @@ class Resultado:
 def lon():
     messagebox.showinfo("Mantenimiento", "Esta sección está en construcción")
 def limpiar():
-    frame1.destroy()
+    frecuencia.configure(state=NORMAL)
+    frecuencia.delete(0, END)
+    combof.configure(state=NORMAL)
+    combof.delete(0, END)
+    distancia.configure(state=NORMAL)
+    distancia.delete(0, END)
+    combod.configure(state=NORMAL)
+    combod.delete(0, END)
+    comboFr.configure(state=NORMAL)
+    comboFr.delete(0, END)
+    comboFC.configure(state=NORMAL)
+    comboFC.delete(0, END)
+    confiabilidad.configure(state=NORMAL)
+    confiabilidad.delete(0, END)
+    bw.configure(state=NORMAL)
+    bw.delete(0, END)
+    gananciarx.configure(state=NORMAL)
+    gananciarx.delete(0, END)
+    gananciatx.configure(state=NORMAL)
+    gananciatx.delete(0, END)
+    sensibilidad.configure(state=NORMAL)
+    sensibilidad.delete(0, END)
+    perdidasAcople.configure(state=NORMAL)
+    perdidasAcople.delete(0, END)
+    perdidasCable.configure(state=NORMAL)
+    perdidasCable.delete(0, END)
+    cn.configure(state=NORMAL)
+    cn.delete(0, END)
+    perdidas.configure(state=NORMAL)
+    perdidas.delete(0, END)
+    comborx.configure(state=NORMAL)
+    comborx.delete(0, END)
+    combotx.configure(state=NORMAL)
+    combotx.delete(0, END)
+    
+    
 
 def resultados():
     resultados= Resultado(2.55,5.26,2.5,16.5,52)

@@ -15,3 +15,4 @@ response.keys()
 if response['status']=='OK':
     geometry= response['results'][0]['geometry']
 
+print(response)
