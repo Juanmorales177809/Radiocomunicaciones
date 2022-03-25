@@ -1,5 +1,7 @@
 from calendar import c
+from cmath import exp
 from pickle import READONLY_BUFFER
+from sqlite3 import Row
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
@@ -31,14 +33,18 @@ note.pack(pady=10, expand=True)
 note.grid(row=0,column=0)
 webLabel = ttk.Label(note,text="Hello")
 frame1 = Frame(note,width=500,height=500)
+
 frame2 = Frame(note,width=500,height=500)
 frame1.pack(fill='both',expand=True)
+
 frame2.pack(fill='both',expand=True)
 frame3 = Frame(note,width=500,height=500)
 frame3.pack(fill='both',expand=True)
 frame4= Frame(frame3,borderwidth=5,border=10)
 frame4.grid(row=0,column=0,columnspan=3,pady=30,padx=15)
 frame4.config(relief='groove')
+
+
 
 imageForum= tk.PhotoImage(file="./assets/ante4.png")
 imageForum1= tk.PhotoImage(file="./assets/convertir.png")
@@ -49,7 +55,10 @@ costpe= tk.PhotoImage(file="./assets/costpeque.png")
 imageForum4= tk.PhotoImage(file="./assets/polar.png")
 mapas= PhotoImage(file="./assets/maps.png")
 abrir= PhotoImage(file="./assets/abrir.png")
-#presupuesto= PhotoImage(file="./assets/cost231.jpg")
+salir= PhotoImage(file="./assets/salir.png")
+cancelar= PhotoImage(file="./assets/cancela.png")
+listar= PhotoImage(file="./assets/listar.png")
+
 
 
 note.add(frame1,image=imageForum,state=NORMAL)
@@ -57,28 +66,45 @@ note.add(frame1,image=imageForum,state=NORMAL)
 note.add(frame2,image=imageForum4)
 note.add(frame3,image=imageForum1)
 
-patloss= PhotoImage(file="./assets/pathsolo.png")
-botonPath = Button(frame1 ,image=patloss, width=500, height=100,compound=tk.LEFT,command=lambda: path())
+modelosImage= PhotoImage(file="./assets/modelosdeperdidas.png")
+botonPath = Button(frame1 ,image=modelosImage, width=500, height=100,compound=tk.LEFT,command=lambda: hello_world())
 botonPath.pack()
+
+
+patloss= PhotoImage(file="./assets/pathsolo.png")
+botonPath1 = Button(frame1 ,image=patloss, width=500, height=100,compound=tk.LEFT,command=lambda: path())
+
 
 okumura= PhotoImage(file="./assets/okumura.png")
 botonPath2 = Button(frame1 ,image=okumura, width=500, height=100,compound=tk.LEFT,command=lambda: oku())
-botonPath2.pack()
+
 
 cost= PhotoImage(file="./assets/cost.png")
 botonPath3 = Button(frame1 ,image=cost, width=500, height=100,compound=tk.LEFT,command=lambda: cos())
-botonPath3.pack()
+
 
 long= PhotoImage(file="./assets/long.png")
 botonPath4 = Button(frame1 ,image=long, width=500, height=100,compound=tk.LEFT,command=lambda: lon())
-botonPath4.pack()
-
-google= PhotoImage(file="./assets/mapitas.png")
-botonPath5 = Button(frame1 ,image=google, width=500, height=100,compound=tk.LEFT,command=lambda: lon())
-botonPath5.pack()
 
 
-    
+# google= PhotoImage(file="./assets/mapitas.png")
+# botonPath5 = Button(frame1 ,image=google, width=500, height=100,compound=tk.LEFT,command=lambda: lon())
+# botonPath5.pack()
+
+
+def goodbye_world():
+    botonPath.configure(command=hello_world)
+    botonPath1.destroy()
+    botonPath2.destroy()
+    botonPath3.destroy()
+    botonPath4.destroy()
+
+def hello_world():
+    botonPath.configure(command=goodbye_world)
+    botonPath1.pack()
+    botonPath2.pack()
+    botonPath3.pack()
+    botonPath4.pack()
 
 
 #radioenlace
@@ -160,7 +186,7 @@ cn.grid(row=12,column=1,pady=5)
 Label(frame2, text="dBm",font=(10)).grid(row=12,column=2,sticky=W)
 
 #Modelo de perdidas
-     
+    
 
 radioValue= IntVar()
 Label(frame2, text="Modelo de perdidas ",font=(10)).grid(row=13,column=0,sticky=E)
@@ -182,11 +208,11 @@ perdidas = Entry(frame2,width=10,borderwidth=3,state=DISABLED)
 perdidas.grid(row=17,column=1,pady=5)
 Label(frame2, text="dB",font=(10)).grid(row=17,column=2,sticky=W)
 Button(frame2,text="Calcular",background='#336DBA',width=15,fg='white',command=lambda: resultados()).grid(row=17,column=0)
-Button(frame2,image=mapas,background='white',fg='white',command=lambda: lon()).grid(row=18,column=3,pady=20,sticky=E)
-Button(frame2,image=mapas,background='white',fg='white',command=lambda: limpiar()).grid(row=18,column=2,pady=20,sticky=E)
-#Button(frame2,image=mapas,background='white',fg='white',command=lambda: listar1()).grid(row=18,column=1,pady=20,sticky=E)
-Button(frame2,image=mapas,background='white',fg='white',command=lambda: listar()).grid(row=18,column=4,pady=20,sticky=E)
-
+Button(frame2,image=listar,background='white',fg='white',command=lambda: lon()).grid(row=18,column=2,pady=20,sticky=E)
+Button(frame2,image=cancelar,background='white',fg='white',command=lambda: limpiar()).grid(row=18,column=2,pady=20,sticky=W)
+Button(frame2,image=mapas,background='white',fg='white',command=lambda: lon()).grid(row=18,column=0,pady=20,sticky=W,padx=20)
+Button(frame2,image=guardar,background='white',fg='white',command=lambda: v.destroy()).grid(row=18,column=3,pady=20,sticky=E)
+Button(frame2,image=salir,background='white',fg='white',command=lambda: listars()).grid(row=18,column=4,pady=20,sticky=E)
 
     
 
@@ -230,7 +256,7 @@ class Modelos:
             
             return d,f
         except:
-            messagebox.showwarning( "Warning","Datos no validos")    
+            messagebox.showwarning( "Warning","Datos no validos")
     def asignar(self,lp):
         self.resultado.configure(state=NORMAL)
         self.resultado.delete(0, END)
@@ -289,7 +315,7 @@ class SelecOkamura(Modelos):
     
     def calcular(self):
         try:
-            d= float(self.distancia.get()) 
+            d= float(self.distancia.get())
             f= float(self.frecuencia.get())
             ud= self.comboD.get()
             uf= self.combof.get()
