@@ -15,6 +15,7 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QAction, QTableWidget,QTableWidgetItem,QVBoxLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
+from presupuesto import Presupuesto
 import unidades
 
 
@@ -63,8 +64,9 @@ listar= PhotoImage(file="./assets/listar.png")
 
 note.add(frame1,image=imageForum,state=NORMAL)
 
-note.add(frame2,image=imageForum4)
+a= note.add(frame2,image=imageForum4)
 note.add(frame3,image=imageForum1)
+
 
 modelosImage= PhotoImage(file="./assets/modelosdeperdidas.png")
 botonPath = Button(frame1 ,image=modelosImage, width=500, height=100,compound=tk.LEFT,command=lambda: hello_world())
@@ -212,13 +214,13 @@ Button(frame2,image=listar,background='white',fg='white',command=lambda: lon()).
 Button(frame2,image=cancelar,background='white',fg='white',command=lambda: limpiar()).grid(row=18,column=2,pady=20,sticky=W)
 Button(frame2,image=mapas,background='white',fg='white',command=lambda: lon()).grid(row=18,column=0,pady=20,sticky=W,padx=20)
 Button(frame2,image=guardar,background='white',fg='white',command=lambda: v.destroy()).grid(row=18,column=3,pady=20,sticky=E)
-Button(frame2,image=salir,background='white',fg='white',command=lambda: listars()).grid(row=18,column=4,pady=20,sticky=E)
+Button(frame2,image=salir,background='white',fg='white',command=lambda: v.destroy()).grid(row=18,column=4,pady=20,sticky=E)
 
     
 
 class Modelos:
     
-    def enviar(self,lfs,f,d,uf,ud):
+    def enviar(self,lfs,f,d,uf,ud,ventana):
             perdidas.configure(state=NORMAL)
             perdidas.delete(0, END)
             perdidas.insert(0,"{:.3f}".format(lfs))
@@ -239,6 +241,10 @@ class Modelos:
             combod.delete(0, END)
             combod.insert(0,ud)
             combod.configure(state=DISABLED)
+            ventana.destroy()
+            
+
+            messagebox.showinfo("Envio exitoso", "Los datos han sido enviados con exito")
     def convertirUnidades(self,d,f,uf,ud):
         try:
         
@@ -305,7 +311,7 @@ class SelecOkamura(Modelos):
         Button(ventana,text="Lp",background='#336DBA',width=15,fg='white',
                     command=lambda: self.calcular()).grid(row=7,column=0,padx=15)
         Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
-                command=lambda: self.enviar(self.lp,float(self.distancia.get()),float(self.frecuencia.get()),self.combof.get(),self.comboD.get())).grid(row=8,column=1,pady=30)
+                command=lambda: self.enviar(self.lp,float(self.distancia.get()),float(self.frecuencia.get()),self.combof.get(),self.comboD.get(),ventana)).grid(row=8,column=1,pady=30)
         Label(ventana,text="dB").grid(row=7, column=2,sticky=W)
         self.resultado= Entry(ventana,borderwidth=3,width=17)
         self.resultado.grid(row=7, column=1)
@@ -375,7 +381,7 @@ class Cost231(Modelos):
         Button(ventana,text="Lp",background='#336DBA',width=15,fg='white',
                     command=lambda: self.calcular()).grid(row=7,column=0,padx=15)
         Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
-                command=lambda: self.enviar(self.lp,float(self.frecuencia.get()),float(self.distancia.get()),self.combof.get(),self.comboD.get())).grid(row=8,column=1,pady=15)
+                command=lambda: self.enviar(self.lp,float(self.frecuencia.get()),float(self.distancia.get()),self.combof.get(),self.comboD.get(),ventana)).grid(row=8,column=1,pady=15)
         Label(ventana,text="dB").grid(row=7, column=2,sticky=W)
         self.resultado= Entry(ventana,borderwidth=3,width=17)
         self.resultado.grid(row=7, column=1,pady=5)
@@ -428,7 +434,7 @@ class PathLoss(Modelos):
         Button(ventana,text="Lfs",background='#336DBA',width=15,fg='white',
             command=lambda: self.calcular()).grid(row=3,column=0,padx=15)
         Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
-            command=lambda: self.enviar(self.lfs,float(self.distancia.get()),float(self.frecuencia.get()),self.combof.get(),self.comboD.get())).grid(row=5,column=1,columnspan=2,pady=30)
+            command=lambda: self.enviar(self.lfs,float(self.distancia.get()),float(self.frecuencia.get()),self.combof.get(),self.comboD.get(),ventana)).grid(row=5,column=1,columnspan=2,pady=30)
         Label(ventana,text="dB").grid(row=3, column=3,sticky=W)
         self.result= Entry(ventana,borderwidth=3,width=17)
         self.result.grid(row=3, column=1,columnspan=2,pady=5,padx=5)
@@ -490,7 +496,7 @@ class Conversor:
         self.unidad.configure(state=DISABLED)
 
 
-class Resultado:
+class Resultado():
     def __init__(self,pire,friis,fc,ptx,gs,):
         self.pire = pire
         self.friis= friis
@@ -531,6 +537,11 @@ class Resultado:
         # Button(frames,image=abrir,background='white',fg='white',command=lambda: resultados()).grid(row=7,column=1, pady= 000)
         # Button(frames,image=guardar,background='white',fg='white',command=lambda: resultados()).grid(row=7,column=0,sticky=E,padx=2)
     
+    def calcular(self):
+        presupuesto = Presupuesto(frecuencia.get(),distancia.get())
+        factorRugo= presupuesto.factorRugo(comboFr.get())
+        FactorClimatico= presupuesto.factorProba(comboFC.get()) 
+        
     
         self.pireE.configure(state=NORMAL)
         self.pireE.delete(0, END)

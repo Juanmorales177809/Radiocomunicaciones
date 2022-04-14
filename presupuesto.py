@@ -3,10 +3,11 @@ from math import log10, sqrt
 import calculos
 
 class Presupuesto:
-    def __init__(self,frecuencia):
+    def __init__(self,frecuencia,distancia):
         self.k=1.380*10**-23
         self.tk=290
         self.f= frecuencia
+        self.distancia= distancia
         
     def factorRugo(self,val):
         if val == "Agua o terreno liso":
