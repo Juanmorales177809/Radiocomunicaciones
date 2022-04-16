@@ -1,87 +1,109 @@
 
 from math import log10, sqrt
-import calculos
+
 
 class Presupuesto:
-    def __init__(self,frecuencia,distancia):
-        self.k=1.380*10**-23
-        self.tk=290
-        self.f= frecuencia
-        self.distancia= distancia
+    def __init__(self,frecuencia,distancia,disponibilidad,factor,propabilidad,anchoBanda,cm,sn,lf,lb,gtx,grx,lfs,tk=290):
+        self.k=1.380*10**-23 # Constante de Boltzman
+        self.tk=tk #Temperatura en kelvin
+        self.f= frecuencia #frecuencia en ghz
+        self.distancia= distancia #Distancia en kilometros
+        self.c= 3*10**8 #Velocidad de la luz
+        self.disponibilidad=disponibilidad #Disponibilidad del sistema en porcentaje
+        self.probabilidad= propabilidad # Factor de probabilidad
+        self.factor= factor #Factor de rugosidad
+        self.anchoBanda= anchoBanda #Ancho de banda del sistema
+        self.cm= cm #Sensibilidad del sistema
+        self.sn= sn #Relación señal a ruido
+        self.lf= lf#Perdidas por el cable
+        self.lb= lb #Perdidas por acople
+        self.gtx=gtx#Ganancia antena transmisora
+        self.lfs= lfs #Modelo de perdidas
+        self.grx=grx #Ganancia antena receptora
+
+    def longitudOnda(self):
+        return self.c/self.f
         
-    def factorRugo(self,val):
-        if val == "Agua o terreno liso":
-            self.A = 4.0
-        elif val == "Sembrados densos, arenales":
-            self.A= 3.0
-        elif val == "Bosques":
-            self.A = 2.0
-        elif val == "Terreno normal":
-            self.A = 1.0
-        elif val == "Aspero y montanoso":
-            self.A = 0.25
-    def factorProba(self,prob):
-        if prob == "Anual a mensual":
-            self.B = 1
-        elif prob == "Areas calientes o humedas":
-            self.B = 0.5
-        elif prob ==  "Areas continentales promedio":
-            self.B = 0.25
-        elif prob == "Areas muy secas o montanosas":
-            self.B = 0.125
+    def factorRugo(self):
+        if self.factor == "Agua o terreno liso":
+            A = 4.0
+        elif self.factor == "Sembrados densos, arenales":
+            A= 3.0
+        elif self.factor == "Bosques":
+            A = 2.0
+        elif self.factor == "Terreno normal":
+            A = 1.0
+        elif self.factor == "Aspero y montañoso":
+            A = 0.25
+        else:
+            print("error")
+        return A
+    def factorProba(self):
+        if self.probabilidad == "Area marina":
+            B = 1
+        elif self.probabilidad == "Area caliente o humeda":
+            B = 0.5
+        elif self.probabilidad ==  "Area Mediterranea":
+            B = 0.25
+        elif self.probabilidad == "Clima seco y fresco":
+            B = 0.125
+        return B
     #Calculo de disponibilidad
-        def r(self,tiempo):
-            return (tiempo*100)/self.tm
+    def r(self):
+        return self.disponibilidad/100
             
     #Margen de desvanecimiento (decibeles)
-    def desvanecimiento(self,val,prob):
-        self.factorRugo(val)
-        self.factorProba(prob)
-        return 30*log10(self.D)+10*log10(6*self.A*self.B*self.f)-10*log10(1-self.R)-70
-    #>Ecuación de Friss, solo recibe valores en decibeles
+    def desvanecimiento(self):
+        A= self.factorRugo()
+        B= self.factorProba()
+        R= self.r()
+        return 30*log10(self.distancia)+10*log10(6*A*B*self.f)-10*log10(1-R)-70
+    #Ecuación de Friss, solo recibe valores en decibeles
     #Potencia de ruido
-    def potenciaRuido(self,B):
-        return '{:.2f}'.format( 10*log10(self.k*self.tk*B))
-    #Calculo del Friis
-    def friis(self):
-        return self.Ptx+self.Gitx+self.Girx-self.lfs
-
+    def potenciaRuido(self):
+        #return '{:.2f}'.format( 10*log10(self.k*self.tk*self.anchoBanda))
+        return -174+10*log10(self.anchoBanda)
+    
+    #sensibilidad del sistema
+    def cmin(self):
+        return -1*(-self.potenciaRuido()-self.sn)
     #Calculo de potencia de radio
-    def gananciaSistema(self,Rtx,cmin):
-        return Rtx - cmin
+    def gananciaSistema(self):
+        return self.desvanecimiento()+self.lfs+self.lb-self.gtx-self.grx
     def rtxs(self,Fm,Lp,Lf,Lb,At,Ar):
         return Fm+Lp+Lf+Lb-At-Ar
-    def rtx(self,cmin):
-        return self.gananciaSistema + cmin
+    def rtx(self):
+        return self.gananciaSistema
     #Calculod el PIRE
-    def PIRE(self,Rtx,pc,Gtx):
-        return Rtx-pc+Gtx
-    def cmin(self,gananciaSistema):
-        self.ptx-gananciaSistema
+    def ptx(self):
+      return self.gananciaSistema()+self.cmin()
+    def PIRE(self):
+        return self.ptx()+self.gtx-self.lf-self.lb 
+    #Calculo del Friis  
+    def friis(self):
+        return self.PIRE()+self.gtx-self.lfs
+    def potenciaRecibida(self):
+      return self.friis()-self.lf-self.lb
     #Pérdida por ramificación
-    def lf(self):
-        if self.f== 1.8:
-            self.lf= 5.4
-            self.lbs= 2
-        elif self.f==7.4:
-            self.lf= 4.7
-            self.lbs=2
-        elif self.f ==  8.0:
-            pass
+    # def lf(self):
+    #     if self.f== 1.8:
+    #         self.lf= 5.4
+    #         self.lbs= 2
+    #     elif self.f==7.4:
+    #         self.lf= 4.7
+    #         self.lbs=2
+    #     elif self.f ==  8.0:
+    #         pass
         
-    #Altura de la antena
-    def rn(self,d1,d2,f):
-        return '{:.2f}'.format(sqrt((calculos.wavLegh(f)*d1*d2)/(d1+d2)))
-    #Zona uno de fresnel 
-    def zonaUno(self,f,D):
-        return 17.32*sqrt(D/(4*f))
-    #Horizonte de radio
+    # #Altura de la antena
+    # def rn(self,d1,d2,f):
+    #     return '{:.2f}'.format(sqrt((self.longitudOnda()*d1*d2)/(d1+d2)))
+    # #Zona uno de fresnel 
+    # def zonaUno(self,f,D):
+    #     return 17.32*sqrt(D/(4*f))
+  
 
 
 if __name__ == "__main__":
-    #lost = Presupuesto(1.8,40)
-    #d = lost.desvanecimiento("Agua o terreno liso","Areas calientes o humedas")
-    #print(d, "dB")
     altura = Presupuesto()
-    print(altura.potenciaRuido(10*10**6))
-    print(altura.rn(9751,9751,915*10**6))
+    

@@ -17,6 +17,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 from presupuesto import Presupuesto
 import unidades
+import convertir
 
 
 
@@ -62,31 +63,41 @@ listar= PhotoImage(file="./assets/listar.png")
 
 
 
-note.add(frame1,image=imageForum,state=NORMAL)
+note.add(frame2,image=imageForum)
 
-a= note.add(frame2,image=imageForum4)
-note.add(frame3,image=imageForum1)
+note.add(frame3,image=imageForum1,state=NORMAL)
+note.add(frame1,image=imageForum4,state=NORMAL)
 
 
 modelosImage= PhotoImage(file="./assets/modelosdeperdidas.png")
 botonPath = Button(frame1 ,image=modelosImage, width=500, height=100,compound=tk.LEFT,command=lambda: hello_world())
-botonPath.pack()
+
 
 
 patloss= PhotoImage(file="./assets/pathsolo.png")
 botonPath1 = Button(frame1 ,image=patloss, width=500, height=100,compound=tk.LEFT,command=lambda: path())
 
-
 okumura= PhotoImage(file="./assets/okumura.png")
 botonPath2 = Button(frame1 ,image=okumura, width=500, height=100,compound=tk.LEFT,command=lambda: oku())
-
 
 cost= PhotoImage(file="./assets/cost.png")
 botonPath3 = Button(frame1 ,image=cost, width=500, height=100,compound=tk.LEFT,command=lambda: cos())
 
-
 long= PhotoImage(file="./assets/long.png")
 botonPath4 = Button(frame1 ,image=long, width=500, height=100,compound=tk.LEFT,command=lambda: lon())
+
+radio= PhotoImage(file="./assets/radio.png")
+radioenlace = PhotoImage(file="./assets/radioenlace.png")
+botonPath5 = Button(frame1 ,image=radioenlace, width=500, height=100,compound=tk.LEFT,command=lambda: lon())
+
+# modelosImage= PhotoImage(file="./assets/modelosdeperdidas.png")
+# imagenModelos= Label(frame1, image=modelosImage)
+
+botonPath5.pack()
+botonPath.pack()
+# imagenModelos.pack()
+
+
 
 
 # google= PhotoImage(file="./assets/mapitas.png")
@@ -110,7 +121,7 @@ def hello_world():
 
 
 #radioenlace
-Label(frame2, text="Radio Enlace", font=(16)).grid(row=0,column=0,sticky=W)
+Label(frame2, image=radio, font=(16)).grid(row=0,column=0,sticky=W, columnspan=5)
 #Distancia
 Label(frame2,text="Distancia :",font=(10)).grid(row=1,column=0,sticky=E)
 distancia= Entry(frame2,width=10,borderwidth=3)
@@ -127,7 +138,7 @@ combof.grid(row=2, column=2,padx=5,pady=5,sticky=W)
 
 #Factor de rugosidad
 Label(frame2, text="Factor de rugosidad de terreno :",font=(10)).grid(row=3,column=0,sticky=E)
-comboFr= ttk.Combobox(frame2,values=["Agua o terreno liso","Sembrados densos, arenales","Bosques","Terreno normal","Aspero, motañoso"],width=25)
+comboFr= ttk.Combobox(frame2,values=["Agua o terreno liso","Sembrados densos, arenales","Bosques","Terreno normal","Aspero y montañoso"],width=25)
 comboFr.grid(row=3, column=1,padx=5,pady=5,columnspan=2)
 
 #Factor de Analisis climatico
@@ -183,8 +194,8 @@ Label(frame2, text="Mhz",font=(10)).grid(row=11,column=2,sticky=W)
 
 #Relación señal a ruido
 Label(frame2, text="C/N :",font=(10)).grid(row=12,column=0,sticky=E)
-cn = Entry(frame2,width=10,borderwidth=3)
-cn.grid(row=12,column=1,pady=5)
+Sn = Entry(frame2,width=10,borderwidth=3)
+Sn.grid(row=12,column=1,pady=5)
 Label(frame2, text="dBm",font=(10)).grid(row=12,column=2,sticky=W)
 
 #Modelo de perdidas
@@ -227,11 +238,11 @@ class Modelos:
             perdidas.configure(state=DISABLED)
             distancia.configure(state=NORMAL)
             distancia.delete(0, END)
-            distancia.insert(0,"{:.3f}".format(d))
+            distancia.insert(0,"{:.3f}".format(f))
             distancia.configure(state=DISABLED)
             frecuencia.configure(state=NORMAL)
             frecuencia.delete(0, END)
-            frecuencia.insert(0,"{:.3f}".format(f))
+            frecuencia.insert(0,"{:.3f}".format(d))
             frecuencia.configure(state=DISABLED)
             combof.configure(state=NORMAL)
             combof.delete(0, END)
@@ -497,16 +508,10 @@ class Conversor:
 
 
 class Resultado():
-    def __init__(self,pire,friis,fc,ptx,gs,):
-        self.pire = pire
-        self.friis= friis
-        self.fc = fc
-        self.ptx = ptx
-        self.gs = gs
-
+    
     def ventana(self):
         ventana = Toplevel()
-        ventana.geometry("400x350")
+        ventana.geometry("300x350")
         ventana.resizable(0,0)
         ventana.iconbitmap("./assets/antena.ico")
         ventana.title("Presupuesto de potencia")
@@ -514,55 +519,100 @@ class Resultado():
         frames.pack(anchor=CENTER,expand=True, fill=tk.X)
         frames.config(relief='groove')
         #Label(ventana,image=imageForum3).grid(row=4,column=1, columnspan=3)
-        Label(frames,text="PIRE:").grid(row=1,column=0,pady=5,ipadx=10)
-        self.pireE= Entry(frames,width=10)
-        self.pireE.grid(row=1,column=1,pady=5)
+        Label(frames,text="Desvanecimiento: ").grid(row=1,column=0,pady=5,ipadx=10)
+        self.desvanecimiento= Entry(frames,width=10)
+        self.desvanecimiento.grid(row=1,column=1,pady=5)
         Label(frames,text="dB").grid(row=1,column=2)
-        Label(frames,text="Friis:").grid(row=2,column=0,pady=5)
-        self.friisE= Entry(frames,width=10)
-        self.friisE.grid(row=2,column=1,pady=5)
-        Label(frames,text="   dB   ").grid(row=2,column=2)
-        Label(frames,text="Fc:").grid(row=3,column=0, pady=5)
-        self.fcE= Entry(frames, width=10)
-        self.fcE.grid(row=3,column=1,pady=5)
-        Label(frames,text="   dB   ").grid(row=3,column=2)
-        Label(frames,text="Ptx:").grid(row=4,column=0,pady=5)
+        Label(frames,text="Gs: ").grid(row=2,column=0,pady=5)
+        self.gananciaSistema= Entry(frames,width=10)
+        self.gananciaSistema.grid(row=2,column=1,pady=5)
+        Label(frames,text="dB").grid(row=2,column=2)
+        Label(frames,text="Sensibilidad de Rtx: ").grid(row=3,column=0, pady=5)
+        self.cmin= Entry(frames, width=10)
+        self.cmin.grid(row=3,column=1,pady=5)
+        Label(frames,text="dB").grid(row=3,column=2)
+        Label(frames,text="Ptx: ").grid(row=4,column=0,pady=5)
         self.ptxE= Entry(frames,width=10)
         self.ptxE.grid(row=4,column=1,pady=5)
-        Label(frames,text="   dBm   ").grid(row=4,column=2)
-        Label(frames,text="             Ganancia del sitema:            ").grid(row=5,column=0,pady=5)
-        self.gsE= Entry(frames,width=10)
-        self.gsE.grid(row=5,column=1)
-        Label(frames,text="   dB   ").grid(row=5,column=2)
+        Label(frames,text="dBm").grid(row=4,column=2)
+        Label(frames,text="PIRE: ").grid(row=5,column=0,pady=5)
+        self.pireR= Entry(frames,width=10)
+        self.pireR.grid(row=5,column=1)
+        Label(frames,text="dB").grid(row=5,column=2)
+        Label(frames,text="Friis: ").grid(row=6,column=0,pady=5)
+        self.friis= Entry(frames,width=10)
+        self.friis.grid(row=6,column=1)
+        Label(frames,text="dB").grid(row=6,column=2)
+        Label(frames,text="Potencia recibida: ").grid(row=7,column=0,pady=5)
+        self.potenciaRecibida= Entry(frames,width=10)
+        self.potenciaRecibida.grid(row=7,column=1)
+        Label(frames,text="dB").grid(row=7,column=2)
+        Label(frames,text="Perdidas en el espacio libre: ").grid(row=8,column=0,pady=5)
+        self.perdidasCalculadas= Entry(frames,width=10)
+        self.perdidasCalculadas.grid(row=8,column=1)
+        Label(frames,text="dB").grid(row=8,column=2)
         # Button(frames,image=abrir,background='white',fg='white',command=lambda: resultados()).grid(row=7,column=1, pady= 000)
-        # Button(frames,image=guardar,background='white',fg='white',command=lambda: resultados()).grid(row=7,column=0,sticky=E,padx=2)
+        Button(frames,image=guardar,background='white',fg='white',command=lambda: resultados()).grid(row=9,column=2,sticky=E,pady=5,columnspan=2)
     
     def calcular(self):
-        presupuesto = Presupuesto(frecuencia.get(),distancia.get())
-        factorRugo= presupuesto.factorRugo(comboFr.get())
-        FactorClimatico= presupuesto.factorProba(comboFC.get()) 
+        j,h,x= verificarDatos()
+        if j and h and x:
+            
+            anchoB= convertir.MhztoHz(float(bw.get()))
+            presupuesto = Presupuesto(float(frecuencia.get()),float(distancia.get()),float(confiabilidad.get()),comboFr.get(),
+                        comboFC.get(),anchoB,float(sensibilidad.get()),float(Sn.get()),float(perdidasCable.get()),float(perdidasAcople.get()),
+                        float(gananciatx.get()),float(gananciarx.get()),float(perdidas.get()))
+            fc= presupuesto.desvanecimiento()
+            Gs= presupuesto.gananciaSistema()
+            cmin= presupuesto.cmin()
+            ptx= presupuesto.ptx()
+            pire= presupuesto.PIRE()
+            friis= presupuesto.friis()
+            Ptx= presupuesto.potenciaRecibida()
+            lfs= float(perdidas.get())
+            
+            
+            self.desvanecimiento.configure(state=NORMAL)
+            self.desvanecimiento.delete(0, END)
+            self.desvanecimiento.insert(0,"{:.1f}".format(fc))
+            self.desvanecimiento.configure(state=DISABLED)
+
+            self.gananciaSistema.configure(state=NORMAL)
+            self.gananciaSistema.delete(0, END)
+            self.gananciaSistema.insert(0,"{:.1f}".format(Gs))
+            self.gananciaSistema.configure(state=DISABLED)
+
+            self.cmin.configure(state=NORMAL)
+            self.cmin.delete(0, END)
+            self.cmin.insert(0,"{:.1f}".format(cmin))
+            self.cmin.configure(state=DISABLED)
+
+            self.ptxE.configure(state=NORMAL)
+            self.ptxE.delete(0, END)
+            self.ptxE.insert(0,"{:.1f}".format(ptx))
+            self.ptxE.configure(state=DISABLED)
+
+            self.pireR.configure(state=NORMAL)
+            self.pireR.delete(0, END)
+            self.pireR.insert(0,"{:.1f}".format(pire))
+            self.pireR.configure(state=DISABLED)
+            
+            self.friis.configure(state=NORMAL)
+            self.friis.delete(0, END)
+            self.friis.insert(0,"{:.1f}".format(friis))
+            self.friis.configure(state=DISABLED)
+            
+            self.potenciaRecibida.configure(state=NORMAL)
+            self.potenciaRecibida.delete(0, END)
+            self.potenciaRecibida.insert(0,"{:.1f}".format(Ptx))
+            self.potenciaRecibida.configure(state=DISABLED)
         
-    
-        self.pireE.configure(state=NORMAL)
-        self.pireE.delete(0, END)
-        self.pireE.insert(0,"{:.1f}".format(self.pire))
-        self.pireE.configure(state=DISABLED)
-        self.friisE.configure(state=NORMAL)
-        self.friisE.delete(0, END)
-        self.friisE.insert(0,"{:.1f}".format(self.friis))
-        self.friisE.configure(state=DISABLED)
-        self.fcE.configure(state=NORMAL)
-        self.fcE.delete(0, END)
-        self.fcE.insert(0,"{:.1f}".format(self.fc))
-        self.fcE.configure(state=DISABLED)
-        self.ptxE.configure(state=NORMAL)
-        self.ptxE.delete(0, END)
-        self.ptxE.insert(0,"{:.1f}".format(self.ptx))
-        self.ptxE.configure(state=DISABLED)
-        self.gsE.configure(state=NORMAL)
-        self.gsE.delete(0, END)
-        self.gsE.insert(0,"{:.1f}".format(self.gs))
-        self.gsE.configure(state=DISABLED)
+            self.perdidasCalculadas.configure(state=NORMAL)
+            self.perdidasCalculadas.delete(0, END)
+            self.perdidasCalculadas.insert(0,"{:.1f}".format(lfs))
+            self.perdidasCalculadas.configure(state=DISABLED)
+        else:
+            messagebox.showerror("Error","Ingrese todos los valores")
         
 
 def lon():
@@ -594,20 +644,66 @@ def limpiar():
     perdidasAcople.delete(0, END)
     perdidasCable.configure(state=NORMAL)
     perdidasCable.delete(0, END)
-    cn.configure(state=NORMAL)
-    cn.delete(0, END)
     perdidas.configure(state=NORMAL)
     perdidas.delete(0, END)
     comborx.configure(state=NORMAL)
     comborx.delete(0, END)
     combotx.configure(state=NORMAL)
     combotx.delete(0, END)
-    
-    
+    Sn.configure(state=NORMAL)
+    Sn.delete(0, END)
+    Sn.configure(state=NORMAL)
+    Sn.delete(0, END)
+def verificarDatos():
+    vector= {1: distancia.get(),2: frecuencia.get(),5: confiabilidad.get(),6: gananciatx.get(),
+            7: gananciarx.get(),8:perdidasCable.get(),9:perdidasAcople.get(),10:sensibilidad.get(),
+            11:bw.get(),12:Sn.get(),17: perdidas.get()}
+    vec= list(vector.items())
+    vector1= {1: combod.get(), 2: combof.get(),6:combotx.get(),7:comborx.get(),10:combo4.get()}
+    vec1= list(vector1.items())
+    vector2= {3: comboFr.get(), 4: comboFC.get()}
+    vec2= list(vector2.items())
+    y= True
+    h= True
+    x= True
+    for i in range(0,len(vec)):
+        v= list(vec[i])
+        
+        if v[1]== '':
+            g= v[0]
+            Label(frame2, text="*", fg='red' ).grid(row=g,column=1,sticky=E)
+            y= False
+        elif v[1]!= '':
+            g= v[0]
+            Label(frame2, text="  ").grid(row=g,column=1,sticky=E)
+    for i in range(0,len(vec1)):
+        v1= list(vec1[i])
+        if v1[1]=='':
+            g1=v1[0]
+            print(g1)
+            Label(frame2, text="*", fg='red' ).grid(row=g1,column=3,sticky=W)
+            h= False
+        elif v1 != '':
+            g1=v1[0]
+            Label(frame2, text="  ", fg='red' ).grid(row=g1,column=3,sticky=W) 
+    for i in range(0,len(vec2)):
+        v2= list(vec2[i])
+        if v2[1]=='':
+            g2=v2[0]
+            print(g1)
+            Label(frame2, text="*", fg='red' ).grid(row=g2,column=3,sticky=W)
+            x= False
+        elif v2 != '':
+            g1=v2[0]
+            Label(frame2, text="  ", fg='red' ).grid(row=g2,column=3,sticky=W) 
+    return y,h,x
+
+
 
 def resultados():
-    resultados= Resultado(2.55,5.26,2.5,16.5,52)
+    resultados= Resultado()
     resultados.ventana()
+    resultados.calcular()
 
 def path():
     loss= PathLoss()
