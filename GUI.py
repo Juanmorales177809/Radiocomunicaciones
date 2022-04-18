@@ -1,23 +1,15 @@
-from calendar import c
-from cmath import exp
 from pickle import READONLY_BUFFER
-from sqlite3 import Row
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 from tkinter import messagebox
-from matplotlib.pyplot import text
-from numpy import imag
-from pyparsing import col
 from modelos import Path,Okumura,Cost
 import convertir
-import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QAction, QTableWidget,QTableWidgetItem,QVBoxLayout
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
 from presupuesto import Presupuesto
 import unidades
 import convertir
+import mapaspyQt
+import sys
 
 
 
@@ -223,7 +215,7 @@ Label(frame2, text="dB",font=(10)).grid(row=17,column=2,sticky=W)
 Button(frame2,text="Calcular",background='#336DBA',width=15,fg='white',command=lambda: resultados()).grid(row=17,column=0)
 Button(frame2,image=listar,background='white',fg='white',command=lambda: lon()).grid(row=18,column=2,pady=20,sticky=E)
 Button(frame2,image=cancelar,background='white',fg='white',command=lambda: limpiar()).grid(row=18,column=2,pady=20,sticky=W)
-Button(frame2,image=mapas,background='white',fg='white',command=lambda: lon()).grid(row=18,column=0,pady=20,sticky=W,padx=20)
+Button(frame2,image=mapas,background='white',fg='white',command=lambda: googmaps()).grid(row=18,column=0,pady=20,sticky=W,padx=20)
 Button(frame2,image=guardar,background='white',fg='white',command=lambda: v.destroy()).grid(row=18,column=3,pady=20,sticky=E)
 Button(frame2,image=salir,background='white',fg='white',command=lambda: v.destroy()).grid(row=18,column=4,pady=20,sticky=E)
 
@@ -510,12 +502,12 @@ class Conversor:
 class Resultado():
     
     def ventana(self):
-        ventana = Toplevel()
-        ventana.geometry("300x350")
-        ventana.resizable(0,0)
-        ventana.iconbitmap("./assets/antena.ico")
-        ventana.title("Presupuesto de potencia")
-        frames= Frame(ventana)
+        self.ven = Toplevel()
+        self.ven.geometry("300x350")
+        self.ven.resizable(0,0)
+        self.ven.iconbitmap("./assets/antena.ico")
+        self.ven.title("Presupuesto de potencia")
+        frames= Frame(self.ven)
         frames.pack(anchor=CENTER,expand=True, fill=tk.X)
         frames.config(relief='groove')
         #Label(ventana,image=imageForum3).grid(row=4,column=1, columnspan=3)
@@ -612,6 +604,7 @@ class Resultado():
             self.perdidasCalculadas.insert(0,"{:.1f}".format(lfs))
             self.perdidasCalculadas.configure(state=DISABLED)
         else:
+            self.ven.destroy()
             messagebox.showerror("Error","Ingrese todos los valores")
         
 
@@ -680,7 +673,7 @@ def verificarDatos():
         v1= list(vec1[i])
         if v1[1]=='':
             g1=v1[0]
-            print(g1)
+            
             Label(frame2, text="*", fg='red' ).grid(row=g1,column=3,sticky=W)
             h= False
         elif v1 != '':
@@ -690,14 +683,20 @@ def verificarDatos():
         v2= list(vec2[i])
         if v2[1]=='':
             g2=v2[0]
-            print(g1)
+            
             Label(frame2, text="*", fg='red' ).grid(row=g2,column=3,sticky=W)
             x= False
         elif v2 != '':
-            g1=v2[0]
+            g2=v2[0]
             Label(frame2, text="  ", fg='red' ).grid(row=g2,column=3,sticky=W) 
     return y,h,x
-
+def googmaps():
+    app = mapaspyQt.QtWidgets.QApplication(sys.argv)
+    Dialog = mapaspyQt.QtWidgets.QDialog() 
+    ui = mapaspyQt.Ui_Dialog()
+    ui.setupUi(Dialog)
+    Dialog.show()
+    sys.exit(app.exec_())
 
 
 def resultados():
