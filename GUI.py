@@ -10,6 +10,12 @@ import unidades
 import convertir
 import mapaspyQt
 import sys
+from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets 
+from PyQt5.QtCore import *
+from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtGui
+import os
 
 
 
@@ -693,9 +699,13 @@ def verificarDatos():
 def googmaps():
     app = mapaspyQt.QtWidgets.QApplication(sys.argv)
     Dialog = mapaspyQt.QtWidgets.QDialog() 
+    web= QtWebEngineWidgets()
+    
+    web.load(QUrl("./gradel/mapas.html"))
     ui = mapaspyQt.Ui_Dialog()
     ui.setupUi(Dialog)
-    Dialog.show()
+    
+    #Dialog.show()
     sys.exit(app.exec_())
 
 
