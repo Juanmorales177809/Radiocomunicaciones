@@ -5,18 +5,22 @@ from PyQt5 import QtGui
 import sys
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets 
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+
+
+
 
 
 app = QApplication(sys.argv)
 web = QWebEngineView()
 
-web.load(QUrl("./gradel/mapas.html"))
+web.load(QUrl("https://www.google.com/maps/place/Guarne,+Antioquia/@6.2798404,-75.4596754,14z/data=!3m1!4b1!4m5!3m4!1s0x8e4426aedc749c1b:0x9eacd415c5a0e4c6!8m2!3d6.2825086!4d-75.4445972"))
 web.setWindowTitle('Vista Radio Enlace')
 web.setWindowIcon(QtGui.QIcon('./assets/antena.ico'))
 web.resize(800, 600)
 web.show()
 app.exec()
-
+sys.exit(app.exec_())
 
 
 
