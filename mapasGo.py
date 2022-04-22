@@ -27,11 +27,11 @@ geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
 reverse_geocode_result = gmaps.reverse_geocode((40.714224, -73.961452))
 
 # Request directions via public transit
-now = datetime.now()
-directions_result = gmaps.directions("Sydney Town Hall",
-                                     "Parramatta, NSW",
-                                     mode="transit",
-                                     departure_time=now)
+# now = datetime.now()
+# directions_result = gmaps.directions("Santa de de antioquia",
+#                                      "Parramatta, NSW",
+#                                      mode="transit",
+#                                      departure_time=now)
                                      
 map= gmplot.GoogleMapPlotter(6.2800171 ,-75.4426875,13,apikey=API_KEY)
 
