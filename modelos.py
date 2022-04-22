@@ -1,5 +1,5 @@
 from math import dist
-from numpy import log10
+from math import log10
 from tkinter import messagebox
 from tkinter import *
 

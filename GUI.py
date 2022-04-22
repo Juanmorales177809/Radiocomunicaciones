@@ -316,7 +316,7 @@ class SelecOkamura(Modelos):
         pequena= Radiobutton(ventana,text="Ciudad pequeña",variable=self.ciudad,value=1)
         pequena.grid(row=5,column=1,sticky=W)
         Label(ventana,textvariable=self.radioValor).grid(row=5,column=2)
-        urbano= Checkbutton(ventana,text="Zona Suburbana",variable= self.sub,onvalue=True, offvalue=False)
+        urbano= Checkbutton(ventana,text="Zona Suburbana",variable= self.sub,onvalue=False, offvalue=True)
         urbano.grid(row=6,column=1)
         Button(ventana,text="Lp",background='#336DBA',width=15,fg='white',
                     command=lambda: self.calcular()).grid(row=7,column=0,padx=15)
