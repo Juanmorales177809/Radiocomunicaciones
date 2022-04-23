@@ -260,15 +260,14 @@ class Modelos:
         
             if ud=='Milles':
                 d= convertir.millasToKm(d)
-                d= convertir.kmToM(d)
-            elif ud=="Km":
-                d= convertir.kmToM(d)
-            if uf== 'MHz':
-                f= convertir.MhztoHz(f)
+            elif ud=="m":
+                d= convertir.meToKm(d)
+            if uf== 'Hz':
+                f=convertir.HztoMhz(f)
             elif uf== 'KHz':
-                f= convertir.KhztoHz(f)
+                f= convertir.KhztoMhz(f)
             elif uf== 'GHz':
-                f= convertir.GhztoHz(f)
+                f= convertir.GhztoMhz(f)
             
             return d,f
         except:
@@ -316,7 +315,7 @@ class SelecOkamura(Modelos):
         pequena= Radiobutton(ventana,text="Ciudad pequeña",variable=self.ciudad,value=1)
         pequena.grid(row=5,column=1,sticky=W)
         Label(ventana,textvariable=self.radioValor).grid(row=5,column=2)
-        urbano= Checkbutton(ventana,text="Zona Suburbana",variable= self.sub,onvalue=False, offvalue=True)
+        urbano= Checkbutton(ventana,text="Zona Suburbana",variable= self.sub,onvalue=True, offvalue=False)
         urbano.grid(row=6,column=1)
         Button(ventana,text="Lp",background='#336DBA',width=15,fg='white',
                     command=lambda: self.calcular()).grid(row=7,column=0,padx=15)
@@ -333,15 +332,17 @@ class SelecOkamura(Modelos):
         try:
             d= float(self.distancia.get())
             f= float(self.frecuencia.get())
+            hte= float(self.hte.get())
+            hre= float(self.hre.get())
             ud= self.comboD.get()
             uf= self.combof.get()
             d,f= self.convertirUnidades(d,f,uf,ud)
             
-            hte= float(self.hte.get())
-            hre= float(self.hre.get())
-
             modelo= Okumura(f,d,hte,hre)
-            self.lp= modelo.calcular(self.ciudad.get(),self.sub.get())
+            a= modelo.calcularA(self.ciudad.get())
+            
+            self.lp= modelo.calcular(self.sub.get(),a)
+            print(a,self.sub.get(), self.ciudad.get())
             self.asignar(self.lp)
         except:
             messagebox.showwarning( "Warning","Datos no validos")
@@ -351,51 +352,51 @@ class Cost231(Modelos):
         self.factor= BooleanVar()
         self.sub= BooleanVar()
         self.ciudad= IntVar()
-    def ventana(self):
+    def ventanas(self):
         
-        ventana = Toplevel()
-        ventana.geometry("350x380")
-        ventana.resizable(0,0)
-        ventana.iconbitmap("./assets/antena.ico")
-        ventana.title("Cost-231")
-        Label(ventana,text="Distancia ").grid(row=0,column=0)
-        self.distancia= Entry(ventana,width=17,borderwidth=3)
+        self.ventana = Toplevel()
+        self.ventana.geometry("350x380")
+        self.ventana.resizable(0,0)
+        self.ventana.iconbitmap("./assets/antena.ico")
+        self.ventana.title("Cost-231")
+        Label(self.ventana,text="Distancia ").grid(row=0,column=0)
+        self.distancia= Entry(self.ventana,width=17,borderwidth=3)
         self.distancia.grid(row=0,column=1,pady=5)
-        self.comboD= ttk.Combobox(ventana, values=["m","Km","Milles"],width=7)
+        self.comboD= ttk.Combobox(self.ventana, values=["m","Km","Milles"],width=7)
         self.comboD.grid(row=0,column=2,padx=5,pady=5,sticky=W)
-        Label(ventana,text="frecuencia ").grid(row=1,column=0)
-        self.frecuencia= Entry(ventana,width=17,borderwidth=3)
+        Label(self.ventana,text="frecuencia ").grid(row=1,column=0)
+        self.frecuencia= Entry(self.ventana,width=17,borderwidth=3)
         self.frecuencia.grid(row=1,column=1,pady=5)
-        self.combof= ttk.Combobox(ventana, values=["KHz","MHz","GHz"],width=7)
+        self.combof= ttk.Combobox(self.ventana, values=["KHz","MHz","GHz"],width=7)
         self.combof.grid(row=1,column=2,padx=5,pady=5,sticky=W)
-        Label(ventana,text="Altura efectiva antena Tx").grid(row=2,column=0)
-        self.hte= Entry(ventana,width=17,borderwidth=3)
+        Label(self.ventana,text="Altura efectiva antena Tx").grid(row=2,column=0)
+        self.hte= Entry(self.ventana,width=17,borderwidth=3)
         self.hte.grid(row=2,column=1,pady=5)
-        Label(ventana,text='m').grid(row=2, column=2,sticky=W)
-        Label(ventana,text="Altura efectiva antena Rx").grid(row=3,column=0)
-        self.hre= Entry(ventana,width=17,borderwidth=3)
+        Label(self.ventana,text='m').grid(row=2, column=2,sticky=W)
+        Label(self.ventana,text="Altura efectiva antena Rx").grid(row=3,column=0)
+        self.hre= Entry(self.ventana,width=17,borderwidth=3)
         self.hre.grid(row=3,column=1,pady=5)
-        Label(ventana,text='m').grid(row=3, column=2,sticky=W)
-        grande= Radiobutton(ventana,text="Ciudad Grande",variable=self.ciudad,value=0)
+        Label(self.ventana,text='m').grid(row=3, column=2,sticky=W)
+        grande= Radiobutton(self.ventana,text="Ciudad Grande",variable=self.ciudad,value=0)
         grande.grid(row=4,column=1,sticky=W)
-        pequena= Radiobutton(ventana,text="Ciudad pequeña",variable=self.ciudad,value=1)
+        pequena= Radiobutton(self.ventana,text="Ciudad pequeña",variable=self.ciudad,value=1)
         pequena.grid(row=5,column=1,sticky=W)
         # check= Checkbutton(ventana,text="Zona Suburbana",var=self.sub,onvalue=True, offvalue=False)
         # check.grid(row=6,column=1,pady=10)
-        self.combofactor= ttk.Combobox(ventana,values=["Ciudad densa","Ciudad","Barrios campestres","Rural"],width=15)
+        self.combofactor= ttk.Combobox(self.ventana,values=["Ciudad densa","Ciudad","Barrios campestres","Rural"],width=15)
         self.combofactor.grid(row=6,column=1,pady=10)
         # self.combofactor.configure(state=DISABLED)
         # chackFac= Checkbutton(ventana,text='Aplicar factor de corrección', var=self.factor,onvalue=True, offvalue=False,command=lambda: self.activar())
         # chackFac.grid(row=7,column=1,columnspan=2,sticky=W)
-        Label(ventana,text="Factor de corrección").grid(row=6,column=0)
-        Button(ventana,text="Lp",background='#336DBA',width=15,fg='white',
+        Label(self.ventana,text="Factor de corrección").grid(row=6,column=0)
+        Button(self.ventana,text="Lp",background='#336DBA',width=15,fg='white',
                     command=lambda: self.calcular()).grid(row=7,column=0,padx=15)
-        Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
-                command=lambda: self.enviar(self.lp,float(self.frecuencia.get()),float(self.distancia.get()),self.combof.get(),self.comboD.get(),ventana)).grid(row=8,column=1,pady=15)
-        Label(ventana,text="dB").grid(row=7, column=2,sticky=W)
-        self.resultado= Entry(ventana,borderwidth=3,width=17)
+        Button(self.ventana,text="Enviar",background='#336DBA',width=15,fg='white',
+                command=lambda: self.enviar(self.lp,float(self.frecuencia.get()),float(self.distancia.get()),self.combof.get(),self.comboD.get(),self.ventana)).grid(row=8,column=1,pady=15)
+        Label(self.ventana,text="dB").grid(row=7, column=2,sticky=W)
+        self.resultado= Entry(self.ventana,borderwidth=3,width=17)
         self.resultado.grid(row=7, column=1,pady=5)
-        mapas= Button(ventana,image=imageForum2,fg='white',command=lambda: lon())
+        mapas= Button(self.ventana,image=imageForum2,fg='white',command=lambda: lon())
         mapas.grid(row=9,column=0,padx=15,pady=15)
 
     def activar(self):
@@ -410,11 +411,16 @@ class Cost231(Modelos):
             ud= self.comboD.get()
             uf= self.combof.get()
             d,f= self.convertirUnidades(d,f,uf,ud)
+            print(f)
             c= self.combofactor.get()
             hte= float(self.hte.get())
             hre= float(self.hre.get())
             modelo= Cost(f,d,hte,hre)
-            self.lp= modelo.calcular(c,self.ciudad.get())
+            a= modelo.calcularA(self.ciudad.get())
+            self.lp= modelo.calcular(c,a)
+            if self.lp==False:
+                messagebox.showerror("Ërror", "solo admite frecuencias entre 1.5Ghz y 2Ghz")
+                self.ventana.destroy()
             print(self.lp)
             self.asignar(self.lp)
             
@@ -721,7 +727,7 @@ def oku():
     okumura.ventana()
 def cos():
     cost= Cost231()
-    cost.ventana()
+    cost.ventanas()
 
 
 

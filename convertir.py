@@ -46,4 +46,9 @@ def KhztoHz(Khz):
     return Khz * 10**3
 def MhztoHz(Mhz):
     return Mhz*10**6
-
+def KhztoMhz(Khz):
+    return Khz*10**-3
+def GhztoMhz(Ghz):
+    return Ghz*10**3
+def HztoMhz(Hz):
+    return Hz*10**-6
