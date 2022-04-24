@@ -43,9 +43,6 @@ class Ui_Dialog(object):
         self.buttonBox.setObjectName("buttonBox")
         self.verticalLayout.addWidget(self.buttonBox)
         self.retranslateUi(Dialog)
-        self.textbox = Dialog(self)
-        self.textbox.move(20, 20)
-        self.textbox.resize(280,40)
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         
