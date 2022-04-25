@@ -11,17 +11,16 @@ from numpy import fromfile
 
 
 
+# def mapas():
+#     app = QApplication(sys.argv)
+#     web = QWebEngineView()
 
-# app = QApplication(sys.argv)
-# web = QWebEngineView()
-
-# web.load(QUrl("https://www.google.com/maps/search/maps/@5.7208734,-76.1568789,9z/data=!3m1!4b1"))
-# web.setWindowTitle('Vista Radio Enlace')
-# web.setWindowIcon(QtGui.QIcon('./assets/antena.ico'))
-# web.resize(800, 600)
-# web.show()
-# app.exec()
-# sys.exit(app.exec_())
+#     web.load(QUrl("https://www.google.com/maps/search/maps/@5.7208734,-76.1568789,9z/data=!3m1!4b1"))
+#     web.setWindowTitle('Vista Radio Enlace')
+#     web.setWindowIcon(QtGui.QIcon('./assets/antena.ico'))
+#     web.resize(800, 600)
+#     web.show()
+#     sys.exit(app.exec_())
 
 
 
@@ -35,7 +34,7 @@ class Ui_Dialog(object):
         self.centralwidget = QtWidgets.QWidget(Dialog)
         self.centralwidget.setObjectName("centralwidget")
         self.webEngineView =QtWebEngineWidgets.QWebEngineView(self.centralwidget)
-        self.webEngineView.load(QUrl.fromLocalFile("/gradel/mapas.html"))
+        self.webEngineView.load(QUrl.fromLocalFile("/gradel/mapa_prueba.html"))
         self.verticalLayout.addWidget(self.webEngineView)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -46,7 +45,7 @@ class Ui_Dialog(object):
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         self.entrys = QtWidgets.QInputDialog(Dialog)
-        self.entrys.move(30,30)
+        
         
         QtCore.QMetaObject.connectSlotsByName(Dialog)
     def retranslateUi(self, Dialog):

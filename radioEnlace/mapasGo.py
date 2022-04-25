@@ -10,21 +10,23 @@ from datetime import datetime
 
 
 API_KEY= "AIzaSyCFsu2GOmmIlGITm0gHOP6P1xRoMZBGBlw"
-address= '6.2825086'
-Client
-params = {
-    'key': API_KEY,
-    'address': address
-}
+map= gmplot.GoogleMapPlotter(6.2800171 ,-75.4426875,13,apikey=API_KEY)
+map.draw('./gradel/mapas.html')
 
-base_url= 'https://maps.googleapis.com/maps/api/geocode/json?'
-response= requests.get(base_url,params=params).json()
-response.keys()
-gmaps= googlemaps.Client(key=API_KEY)
-geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
+# address= '6.2825086'
+# Client
+# params = {
+#     'key': API_KEY,
+#     'address': address
+# }
 
+# base_url= 'https://maps.googleapis.com/maps/api/geocode/json?'
+# response= requests.get(base_url,params=params).json()
+# response.keys()
+# gmaps= googlemaps.Client(key=API_KEY)
+#
 # Look up an address with reverse geocoding
-reverse_geocode_result = gmaps.reverse_geocode((40.714224, -73.961452))
+# reverse_geocode_result = gmaps.reverse_geocode((40.714224, -73.961452))
 
 # Request directions via public transit
 # now = datetime.now()
@@ -33,9 +35,6 @@ reverse_geocode_result = gmaps.reverse_geocode((40.714224, -73.961452))
 #                                      mode="transit",
 #                                      departure_time=now)
                                      
-map= gmplot.GoogleMapPlotter(6.2800171 ,-75.4426875,13,apikey=API_KEY)
-
-map.draw('./gradel/mapas.html')
 
 # def revisar():
 #     lista= list(response.items())

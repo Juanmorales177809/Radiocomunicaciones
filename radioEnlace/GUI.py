@@ -3,12 +3,12 @@ from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 from tkinter import messagebox
+import webbrowser
 from modelos import Path,Okumura,Cost
 import convertir
 from presupuesto import Presupuesto
 import unidades
 import convertir
-import mapaspyQt
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets 
 from PyQt5.QtCore import *
@@ -17,6 +17,11 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtGui
 import os
 from mapaspyQt import Ui_Dialog
+import mapGenerator
+from tkinter import filedialog
+from geopy.distance import geodesic 
+import webbrowser
+
 
 
 
@@ -59,6 +64,7 @@ abrir= PhotoImage(file="./assets/abrir.png")
 salir= PhotoImage(file="./assets/salir.png")
 cancelar= PhotoImage(file="./assets/cancela.png")
 listar= PhotoImage(file="./assets/listar.png")
+buscar= PhotoImage(file='./assets/buscar1.png')
 
 
 
@@ -121,110 +127,119 @@ def hello_world():
 
 #radioenlace
 Label(frame2, image=radio, font=(16)).grid(row=0,column=0,sticky=W, columnspan=5)
+
+#Coordenadas
+Label(frame2,text='Sitio 1 :',font=(10)).grid(row=1,column=0,sticky=E,padx=80)
+coordenadas= Entry(frame2,width=30,borderwidth=3)
+coordenadas.grid(row=1,column=0,sticky=E,columnspan=2)
+Label(frame2,text='Sitio 2 :',font=(10)).grid(row=2,column=0,sticky=E,padx=80)
+coordenadas1= Entry(frame2,width=30,borderwidth=3)
+coordenadas1.grid(row=2,column=0,sticky=E,columnspan=2)
+Button(frame2,image=buscar,background='white',fg='white',command=lambda: googmaps(coordenadas.get(),coordenadas1.get())).grid(row=1,column=2,pady=20,sticky=E,rowspan=2,padx=5)
 #Distancia
-Label(frame2,text="Distancia :",font=(10)).grid(row=1,column=0,sticky=E)
+Label(frame2,text="Distancia :",font=(10)).grid(row=3,column=0,sticky=E)
 distancia= Entry(frame2,width=10,borderwidth=3)
-distancia.grid(row=1,column=1)
+distancia.grid(row=3,column=1)
 combod= ttk.Combobox(frame2,values=["m","Km","Milles"],width=7)
-combod.grid(row=1,column=2,padx=5,pady=5,sticky=W)
+combod.grid(row=3,column=2,padx=5,pady=5,sticky=W)
 
 #Frecuencia
-Label(frame2, text="Frecuencia :",font=(10)).grid(row=2,column=0,sticky=E)
+Label(frame2, text="Frecuencia :",font=(10)).grid(row=4,column=0,sticky=E)
 frecuencia = Entry(frame2,width=10,borderwidth=3)
-frecuencia.grid(row=2,column=1)
+frecuencia.grid(row=4,column=1)
 combof= ttk.Combobox(frame2,values=["Hz","Mhz","Khz","Ghz"],width=7)
-combof.grid(row=2, column=2,padx=5,pady=5,sticky=W)
+combof.grid(row=4, column=2,padx=5,pady=5,sticky=W)
 
 #Factor de rugosidad
-Label(frame2, text="Factor de rugosidad de terreno :",font=(10)).grid(row=3,column=0,sticky=E)
+Label(frame2, text="Factor de rugosidad de terreno :",font=(10)).grid(row=5,column=0,sticky=E)
 comboFr= ttk.Combobox(frame2,values=["Agua o terreno liso","Sembrados densos, arenales","Bosques","Terreno normal","Aspero y montañoso"],width=25)
-comboFr.grid(row=3, column=1,padx=5,pady=5,columnspan=2)
+comboFr.grid(row=5, column=1,padx=5,pady=5,columnspan=2)
 
 #Factor de Analisis climatico
-Label(frame2, text="Factor de Analisis climatico :",font=(10)).grid(row=4,column=0,sticky=E)
+Label(frame2, text="Factor de Analisis climatico :",font=(10)).grid(row=6,column=0,sticky=E)
 comboFC= ttk.Combobox(frame2,values=["Area marina","Area caliente o humeda","Area Mediterranea","Clima seco y fresco"],width=25)
-comboFC.grid(row=4, column=1,padx=5,pady=5,columnspan=2)
+comboFC.grid(row=6, column=1,padx=5,pady=5,columnspan=2)
 
 #Confiabilidad del sistema
-Label(frame2, text="Fiabilidad requerida :",font=(10)).grid(row=5,column=0,sticky=E)
+Label(frame2, text="Fiabilidad requerida :",font=(10)).grid(row=7,column=0,sticky=E)
 confiabilidad = Entry(frame2,width=10,borderwidth=3)
-confiabilidad.grid(row=5,column=1)
-Label(frame2, text="%",font=(10)).grid(row=5,column=2,pady=5,sticky=W)
+confiabilidad.grid(row=7,column=1)
+Label(frame2, text="%",font=(10)).grid(row=7,column=2,pady=5,sticky=W)
 
 #Ganancia antena transmisora
-Label(frame2, text="Ganancia de la antena Tx :",font=(10)).grid(row=6,column=0,sticky=E)
+Label(frame2, text="Ganancia de la antena Tx :",font=(10)).grid(row=8,column=0,sticky=E)
 gananciatx = Entry(frame2,width=10,borderwidth=3)
-gananciatx.grid(row=6,column=1)
+gananciatx.grid(row=8,column=1)
 combotx= ttk.Combobox(frame2,values=["dBm","dBi"],width=7)
-combotx.grid(row=6, column=2,padx=5,pady=5,sticky=W)
+combotx.grid(row=8, column=2,padx=5,pady=5,sticky=W)
 
 #Ganancia antena receptora
-Label(frame2, text="Ganancia de la antena Rx :",font=(10)).grid(row=7,column=0,sticky=E)
+Label(frame2, text="Ganancia de la antena Rx :",font=(10)).grid(row=9,column=0,sticky=E)
 gananciarx = Entry(frame2,width=10,borderwidth=3)
-gananciarx.grid(row=7,column=1)
+gananciarx.grid(row=9,column=1)
 comborx= ttk.Combobox(frame2,values=["dBb","dBi"],width=7)
-comborx.grid(row=7, column=2,padx=5,pady=5,sticky=W)
+comborx.grid(row=9, column=2,padx=5,pady=5,sticky=W)
 
 #Perdidas por cable
-Label(frame2, text="Perdidas por cable Lf :",font=(10)).grid(row=8,column=0,sticky=E)
+Label(frame2, text="Perdidas por cable Lf :",font=(10)).grid(row=10,column=0,sticky=E)
 perdidasCable = Entry(frame2,width=10,borderwidth=3)
-perdidasCable.grid(row=8,column=1,pady=5)
-Label(frame2, text="dB",font=(10)).grid(row=8,column=2,sticky=W)
+perdidasCable.grid(row=10,column=1,pady=5)
+Label(frame2, text="dB",font=(10)).grid(row=10,column=2,sticky=W)
 
 #Perdidas por acople
-Label(frame2, text="Perdidas por acople Lb :",font=(10)).grid(row=9,column=0,sticky=E)
+Label(frame2, text="Perdidas por acople Lb :",font=(10)).grid(row=11,column=0,sticky=E)
 perdidasAcople = Entry(frame2,width=10,borderwidth=3)
-perdidasAcople.grid(row=9,column=1,pady=5)
-Label(frame2, text="dB",font=(10)).grid(row=9,column=2,sticky=W)
+perdidasAcople.grid(row=11,column=1,pady=5)
+Label(frame2, text="dB",font=(10)).grid(row=11,column=2,sticky=W)
 
 
 #Sensibilidad receptora
-Label(frame2, text="Sensibilidad Rx :",font=(10)).grid(row=10,column=0,sticky=E)
+Label(frame2, text="Sensibilidad Rx :",font=(10)).grid(row=12,column=0,sticky=E)
 sensibilidad = Entry(frame2,width=10,borderwidth=3)
-sensibilidad.grid(row=10,column=1)
+sensibilidad.grid(row=12,column=1)
 combo4= ttk.Combobox(frame2,values=["dBm","μV"],width=7,state=READONLY_BUFFER)
-combo4.grid(row=10, column=2,padx=5,pady=5,sticky=W)
+combo4.grid(row=12, column=2,padx=5,pady=5,sticky=W)
 
 #Ancho de banda
-Label(frame2, text="BW :",font=(10)).grid(row=11,column=0,sticky=E)
+Label(frame2, text="BW :",font=(10)).grid(row=13,column=0,sticky=E)
 bw = Entry(frame2,width=10,borderwidth=3)
-bw.grid(row=11,column=1,pady=5)
-Label(frame2, text="Mhz",font=(10)).grid(row=11,column=2,sticky=W)
+bw.grid(row=13,column=1,pady=5)
+Label(frame2, text="Mhz",font=(10)).grid(row=13,column=2,sticky=W)
 
 #Relación señal a ruido
-Label(frame2, text="C/N :",font=(10)).grid(row=12,column=0,sticky=E)
+Label(frame2, text="C/N :",font=(10)).grid(row=14,column=0,sticky=E)
 Sn = Entry(frame2,width=10,borderwidth=3)
-Sn.grid(row=12,column=1,pady=5)
-Label(frame2, text="dBm",font=(10)).grid(row=12,column=2,sticky=W)
+Sn.grid(row=14,column=1,pady=5)
+Label(frame2, text="dBm",font=(10)).grid(row=14,column=2,sticky=W)
 
 #Modelo de perdidas
     
 
 radioValue= IntVar()
-Label(frame2, text="Modelo de perdidas ",font=(10)).grid(row=13,column=0,sticky=E)
+Label(frame2, text="Modelo de perdidas ",font=(10)).grid(row=15,column=0,sticky=E)
 radio1= Radiobutton(frame2,text="Path Loss", variable=radioValue,value=0,command=lambda: path())
-radio1.grid(row=13,column=1,sticky=W)
+radio1.grid(row=15,column=1,sticky=W)
 radio2= Radiobutton(frame2,text="Okumura-Hata", variable=radioValue,value=1,command=lambda: oku())
-radio2.grid(row=14,column=1,sticky=W)
+radio2.grid(row=16,column=1,sticky=W)
 radio3= Radiobutton(frame2,text="Cost-231",variable=radioValue,value=2,command=lambda: cos())
-radio3.grid(row=15,column=1,sticky=W)
-radio4= Radiobutton(frame2,text="Longley-Rice", variable=radioValue,value=3,command=lambda: lon())
-radio4.grid(row=16,column=1,sticky=W)
+radio3.grid(row=17,column=1,sticky=W)
+# radio4= Radiobutton(frame2,text="Longley-Rice", variable=radioValue,value=3,command=lambda: lon())
+# radio4.grid(row=16,column=1,sticky=W)
 
 
 #Perdidas por espacio libre
 
 
-Label(frame2, text="Lp :",font=(10)).grid(row=17,column=0,sticky=E)
+Label(frame2, text="Lp :",font=(10)).grid(row=18,column=0,sticky=E)
 perdidas = Entry(frame2,width=10,borderwidth=3,state=DISABLED)
-perdidas.grid(row=17,column=1,pady=5)
-Label(frame2, text="dB",font=(10)).grid(row=17,column=2,sticky=W)
-Button(frame2,text="Calcular",background='#336DBA',width=15,fg='white',command=lambda: resultados()).grid(row=17,column=0)
-Button(frame2,image=listar,background='white',fg='white',command=lambda: lon()).grid(row=18,column=2,pady=20,sticky=E)
-Button(frame2,image=cancelar,background='white',fg='white',command=lambda: limpiar()).grid(row=18,column=2,pady=20,sticky=W)
-Button(frame2,image=mapas,background='white',fg='white',command=lambda: googmaps()).grid(row=18,column=0,pady=20,sticky=W,padx=20)
-Button(frame2,image=guardar,background='white',fg='white',command=lambda: v.destroy()).grid(row=18,column=3,pady=20,sticky=E)
-Button(frame2,image=salir,background='white',fg='white',command=lambda: v.destroy()).grid(row=18,column=4,pady=20,sticky=E)
+perdidas.grid(row=18,column=1,pady=5)
+Label(frame2, text="dB",font=(10)).grid(row=18,column=2,sticky=W)
+Button(frame2,text="Calcular",background='#336DBA',width=15,fg='white',command=lambda: resultados()).grid(row=18,column=0)
+Button(frame2,image=listar,background='white',fg='white',command=lambda: abrirArchivo()).grid(row=19,column=2,pady=20,sticky=E)
+Button(frame2,image=cancelar,background='white',fg='white',command=lambda: limpiar()).grid(row=19,column=2,pady=20,sticky=W)
+Button(frame2,image=mapas,background='white',fg='white',command=lambda: googmaps()).grid(row=19,column=0,pady=20,sticky=W,padx=20)
+Button(frame2,image=guardar,background='white',fg='white',command=lambda: v.destroy()).grid(row=19,column=3,pady=20,sticky=E)
+Button(frame2,image=salir,background='white',fg='white',command=lambda: v.destroy()).grid(row=19,column=4,pady=20,sticky=E)
 
     
 
@@ -703,14 +718,29 @@ def verificarDatos():
             g2=v2[0]
             Label(frame2, text="  ", fg='red' ).grid(row=g2,column=3,sticky=W) 
     return y,h,x
-def googmaps():
+def googmaps(coor,coor1):
     if __name__ == "__main__":
+        geoDistancia(coor,coor1)
+        mapGenerator.create(coor)
         app = QtWidgets.QApplication(sys.argv)
         Dialog = QtWidgets.QDialog()
         ui = Ui_Dialog()
         ui.setupUi(Dialog)
         Dialog.show()
-        sys.exit(app.exec_())
+        app.exec()
+def geoDistancia(coor,coor1):
+    
+    
+    dista= geodesic(coor, coor1).kilometers
+    distancia.configure(state=NORMAL)
+    distancia.delete(0, END)
+    distancia.insert(0,"{:.1f}".format(dista))
+    distancia.configure(state=DISABLED)
+    combod.configure(state=NORMAL)
+    combod.delete(0, END)
+    combod.insert(0,'Km')
+    combod.configure(state=DISABLED)
+    print(dista)
 
 
 def resultados():
@@ -729,7 +759,9 @@ def cos():
     cost= Cost231()
     cost.ventanas()
 
-
+def abrirArchivo():
+    archivo= filedialog.askopenfilename(title="abrir",initialdir="C:/", filetypes=[("Archivos .html", "*.html")])
+    print(archivo)
 
 
 
