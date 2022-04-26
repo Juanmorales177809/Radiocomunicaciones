@@ -1,4 +1,4 @@
-from pickle import READONLY_BUFFER
+
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
@@ -129,10 +129,16 @@ def hello_world():
 Label(frame2, image=radio, font=(16)).grid(row=0,column=0,sticky=W, columnspan=5)
 
 #Coordenadas
-Label(frame2,text='Sitio 1 :',font=(10)).grid(row=1,column=0,sticky=E,padx=80)
+Label(frame2,text='Coordenadas :',font=(6)).grid(row=1,column=0,sticky=W)
+sitio1= Entry(frame2,width=10, borderwidth=3)
+sitio1.grid(row=1,column=0,sticky=E,padx=120)
+sitio1.insert(0, 'Sitio 1')
 coordenadas= Entry(frame2,width=30,borderwidth=3)
 coordenadas.grid(row=1,column=0,sticky=E,columnspan=2)
-Label(frame2,text='Sitio 2 :',font=(10)).grid(row=2,column=0,sticky=E,padx=80)
+Label(frame2,text='Coordenadas :',font=(6)).grid(row=2,column=0,sticky=W)
+sitio2= Entry(frame2,width=10,borderwidth=3)
+sitio2.grid(row=2,column=0,sticky=E,padx=120)
+sitio2.insert(0, 'Sitio 2')
 coordenadas1= Entry(frame2,width=30,borderwidth=3)
 coordenadas1.grid(row=2,column=0,sticky=E,columnspan=2)
 Button(frame2,image=buscar,background='white',fg='white',command=lambda: googmaps(coordenadas.get(),coordenadas1.get())).grid(row=1,column=2,pady=20,sticky=E,rowspan=2,padx=5)
@@ -197,7 +203,7 @@ Label(frame2, text="dB",font=(10)).grid(row=11,column=2,sticky=W)
 Label(frame2, text="Sensibilidad Rx :",font=(10)).grid(row=12,column=0,sticky=E)
 sensibilidad = Entry(frame2,width=10,borderwidth=3)
 sensibilidad.grid(row=12,column=1)
-combo4= ttk.Combobox(frame2,values=["dBm","μV"],width=7,state=READONLY_BUFFER)
+combo4= ttk.Combobox(frame2,values=["dBm","μV"],width=7)
 combo4.grid(row=12, column=2,padx=5,pady=5,sticky=W)
 
 #Ancho de banda
@@ -299,7 +305,7 @@ class SelecOkamura(Modelos):
         self.ciudad=IntVar(value=0)
         self.sub= BooleanVar()
 
-    def ventana(self):
+    def ventana(self,distancia='',frecuencia= '',uniD='', uniF=''):
         ventana = Toplevel()
         ventana.geometry("350x400")
         ventana.resizable(0,0)
@@ -310,13 +316,17 @@ class SelecOkamura(Modelos):
         Label(ventana,text="Distancia ").grid(row=0,column=0)
         self.distancia= Entry(ventana,width=17,borderwidth=3)
         self.distancia.grid(row=0,column=1,pady=5)
+        self.distancia.insert(0,distancia)
         self.comboD= ttk.Combobox(ventana, values=["m","Km","Milles"],width=7)
         self.comboD.grid(row=0,column=2,padx=5,pady=5,sticky=W)
+        self.comboD.insert(0,uniD)
         Label(ventana,text="frecuencia ").grid(row=1,column=0)
         self.frecuencia= Entry(ventana,width=17,borderwidth=3)
         self.frecuencia.grid(row=1,column=1,pady=5)
+        self.frecuencia.insert(0, frecuencia)
         self.combof= ttk.Combobox(ventana, values=["Hz","KHz","MHz","GHz"],width=7)
         self.combof.grid(row=1,column=2,padx=5,pady=5,sticky=W)
+        self.combof.insert(0,uniF)
         Label(ventana,text="Altura efectiva antena Tx").grid(row=2,column=0)
         self.hte= Entry(ventana,width=17,borderwidth=3)
         self.hte.grid(row=2,column=1,pady=5)
@@ -367,7 +377,7 @@ class Cost231(Modelos):
         self.factor= BooleanVar()
         self.sub= BooleanVar()
         self.ciudad= IntVar()
-    def ventanas(self):
+    def ventanas(self,distancia='',frecuencia= '',uniD='', uniF=''):
         
         self.ventana = Toplevel()
         self.ventana.geometry("350x380")
@@ -377,13 +387,17 @@ class Cost231(Modelos):
         Label(self.ventana,text="Distancia ").grid(row=0,column=0)
         self.distancia= Entry(self.ventana,width=17,borderwidth=3)
         self.distancia.grid(row=0,column=1,pady=5)
+        self.distancia.insert(0,distancia)
         self.comboD= ttk.Combobox(self.ventana, values=["m","Km","Milles"],width=7)
         self.comboD.grid(row=0,column=2,padx=5,pady=5,sticky=W)
+        self.comboD.insert(0,uniD)
         Label(self.ventana,text="frecuencia ").grid(row=1,column=0)
         self.frecuencia= Entry(self.ventana,width=17,borderwidth=3)
         self.frecuencia.grid(row=1,column=1,pady=5)
+        self.frecuencia.insert(0,frecuencia)
         self.combof= ttk.Combobox(self.ventana, values=["KHz","MHz","GHz"],width=7)
         self.combof.grid(row=1,column=2,padx=5,pady=5,sticky=W)
+        self.combof.insert(0,uniF)
         Label(self.ventana,text="Altura efectiva antena Tx").grid(row=2,column=0)
         self.hte= Entry(self.ventana,width=17,borderwidth=3)
         self.hte.grid(row=2,column=1,pady=5)
@@ -444,10 +458,11 @@ class Cost231(Modelos):
         
     
 class PathLoss(Modelos):
-    def ventana(self):
+    def ventana(self,distancia='',frecuencia= '',uniD='', uniF=''):
         ventana = Toplevel()
         ventana.geometry("350x250")
         ventana.resizable(0,0)
+        
         # ventana.config(bg='#d7f3bc')
         ventana.iconbitmap("./assets/antena.ico")
         ventana.title("Path Loss")
@@ -455,13 +470,17 @@ class PathLoss(Modelos):
         Label(ventana,text="  Distancia  ").grid(row=0,column=0)
         self.distancia= Entry(ventana,width=17,borderwidth=3)
         self.distancia.grid(row=0,column=1,pady=5,columnspan=2)
+        self.distancia.insert(0,distancia)
         self.comboD= ttk.Combobox(ventana, values=["m","Km","Milles"],width=7)
         self.comboD.grid(row=0,column=3,padx=5,pady=5,sticky=W)
+        self.comboD.insert(0,uniD)
         Label(ventana,text="  Frecuencia  ").grid(row=1,column=0)
         self.frecuencia= Entry(ventana,width=17,borderwidth=3)
         self.frecuencia.grid(row=1,column=1,pady=5, columnspan=2)
+        self.frecuencia.insert(0,frecuencia)
         self.combof= ttk.Combobox(ventana, values=["KHz","MHz","GHz"],width=7)
         self.combof.grid(row=1,column=3,padx=5,pady=5,sticky=W)
+        self.combof.insert(0,uniF)
         Button(ventana,text="Lfs",background='#336DBA',width=15,fg='white',
             command=lambda: self.calcular()).grid(row=3,column=0,padx=15)
         Button(ventana,text="Enviar",background='#336DBA',width=15,fg='white',
@@ -721,7 +740,7 @@ def verificarDatos():
 def googmaps(coor,coor1):
     if __name__ == "__main__":
         geoDistancia(coor,coor1)
-        mapGenerator.create(coor)
+        mapGenerator.create(coor,coor1,sitio1.get(),sitio2.get())
         app = QtWidgets.QApplication(sys.argv)
         Dialog = QtWidgets.QDialog()
         ui = Ui_Dialog()
@@ -750,14 +769,14 @@ def resultados():
 
 def path():
     loss= PathLoss()
-    loss.ventana()
+    loss.ventana(distancia.get(),frecuencia.get(),combod.get(),combof.get())
 
 def oku():
     okumura= SelecOkamura()
-    okumura.ventana()
+    okumura.ventana(distancia.get(),frecuencia.get(),combod.get(),combof.get())
 def cos():
     cost= Cost231()
-    cost.ventanas()
+    cost.ventanas(distancia.get(),frecuencia.get(),combod.get(),combof.get())
 
 def abrirArchivo():
     archivo= filedialog.askopenfilename(title="abrir",initialdir="C:/", filetypes=[("Archivos .html", "*.html")])

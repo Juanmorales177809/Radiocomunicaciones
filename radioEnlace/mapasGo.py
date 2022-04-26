@@ -3,7 +3,6 @@ from re import A
 from matplotlib.pyplot import draw, scatter
 import requests
 import time
-import googlemaps
 from gmplot import *
 from datetime import datetime
 
